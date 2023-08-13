@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Solidity变量数据存储和作用域 | hassan</title>
+    <meta name="description" content="变量存储和作用域(storage/memory/calldata)">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_contract_data_storage.md.05e6a694.lean.js">
+    
+    <meta name="twitter:title" content="Solidity变量数据存储和作用域 | hassan">
+  <meta property="og:title" content="Solidity变量数据存储和作用域 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#solidity中的引用类型">Solidity中的引用类型</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#数据位置">数据位置</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#数据位置和赋值规则">数据位置和赋值规则</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#变量作用域">变量作用域</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#状态变量">状态变量</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#局部变量">局部变量</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#全局变量">全局变量</a><!----></li></ul></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="solidity变量数据存储和作用域" tabindex="-1">Solidity变量数据存储和作用域 <a class="header-anchor" href="#solidity变量数据存储和作用域" aria-hidden="true">#</a></h1><h2 id="solidity中的引用类型" tabindex="-1">Solidity中的引用类型 <a class="header-anchor" href="#solidity中的引用类型" aria-hidden="true">#</a></h2><p>引用类型：包括数组(array)、结构体(struct)、映射(mapping),这类变量占用空间大，赋值的时候直接传递地址。由于这类变量比较复杂，占用存储空间大，我们在使用的时候必须声明数据存储的位置。</p><h2 id="数据位置" tabindex="-1">数据位置 <a class="header-anchor" href="#数据位置" aria-hidden="true">#</a></h2><p>Solidity数据存储位置有三类：storage、memory和calldata。不同存储位置的gas成本不同。storage类型的数据存储在链上，消耗gas多，memory和calldata类型的临时存在内存里，消耗gas少。大致用法：</p><ol><li>storage：合约里的状态变量默认都是storage，存储在链上。</li><li>memory：合约里的参数和临时变量一般使用memory，存储在内存里面，不上链。</li><li>calldata：和memory类似，存储在内存中，不上链。与memory的不同点在于calldata变量不能修改(immutable),一般用于函数的参数。例子：</li></ol><div class="language-"><pre><code>    function fCalldata(uint[] calldata _x) public pure returns(uint[] calldata){
+        //参数为calldata数组，不能被修改
+        // _x[0] = 0 //这样修改会报错
+        return(_x);
+    }
+</code></pre></div><h2 id="数据位置和赋值规则" tabindex="-1">数据位置和赋值规则 <a class="header-anchor" href="#数据位置和赋值规则" aria-hidden="true">#</a></h2><p>在不同存储类型相互赋值时候，有时会产生独立的副本(修改新变量不会影响原变量)，有时会产生引用(修改新变量会影响原来的变量)。规则如下：</p><ol><li>storeage(合约的状态变量)赋值给本地storage(函数里面的)时候，会创建引用，改变新变量会影响原变量。例子：</li></ol><div class="language-"><pre><code>    uint[] x = [1,2,3]; // 状态变量：数组 x
+
+    function fStorage() public{
+        //声明一个storage的变量 xStorage，指向x。修改xStorage也会影响x
+        uint[] storage xStorage = x;
+        xStorage[0] = 100;
+    }
+</code></pre></div><ol start="2"><li>storage赋值给memory，会创建独立的副本，修改其中一个不会影响另一个；反之亦然。例子：</li></ol><div class="language-"><pre><code>    uint[] x = [1,2,3]; // 状态变量：数组 x
+    
+    function fMemory() public view{
+        //声明一个Memory的变量xMemory，复制x。修改xMemory不会影响x
+        uint[] memory xMemory = x;
+        xMemory[0] = 100;
+        xMemory[1] = 200;
+        uint[] memory xMemory2 = x;
+        xMemory2[0] = 300;
+    }
+</code></pre></div><h2 id="变量作用域" tabindex="-1">变量作用域 <a class="header-anchor" href="#变量作用域" aria-hidden="true">#</a></h2><p>Solidity中变量按作用域划分为三种，分别是状态变量(state variable)、局部变量(local variable)和全局变量(global variable)</p><h3 id="状态变量" tabindex="-1">状态变量 <a class="header-anchor" href="#状态变量" aria-hidden="true">#</a></h3><p>状态变量是数据存储在链上的变量，所有合约都可以访问，gas消费比较高。状态变量在合约内、函数外声明：</p><div class="language-"><pre><code>contract Variables {
+    uint public x = 1;
+    uint public y;
+    string public z;
+</code></pre></div><p>我们可以在函数里面改变状态变量的值：</p><div class="language-"><pre><code>    function foo() external{
+        // 可以在函数里更改状态变量的值
+        x = 5;
+        y = 2;
+        z = &quot;0xAA&quot;;
+    }
+</code></pre></div><h3 id="局部变量" tabindex="-1">局部变量 <a class="header-anchor" href="#局部变量" aria-hidden="true">#</a></h3><p>局部变量是仅在函数执行过程中有效的变量，函数退出后，变量无效。局部变量的数据存储在内存里，不上链，gas消费低。局部变量在函数内声明：</p><div class="language-"><pre><code>    function bar() external pure returns(uint){
+        uint xx = 1;
+        uint yy = 3;
+        uint zz = xx + yy;
+        return(zz);
+    }
+</code></pre></div><h3 id="全局变量" tabindex="-1">全局变量 <a class="header-anchor" href="#全局变量" aria-hidden="true">#</a></h3><p>全局变量是在全局范围内工作的变量，都是Solidity预留关键字，它们可以在函数内不生命直接使用：</p><div class="language-"><pre><code>    function global() external view returns(address, uint, bytes memory){
+        address sender = msg.sender;
+        uint blockNum = block.number;
+        bytes memory data = msg.data;
+        return(sender, blockNum, data);
+    }
+</code></pre></div><p>在上面例子里，我们使用了3个常用的全局变量：msg.sender, block.number和msg.data，他们分别代表请求发起地址，当前区块高度，和请求数据。下面是一些常用的全局变量，更完整的列表请看这个<a href="https://learnblockchain.cn/docs/solidity/units-and-global-variables.html#special-variables-and-functions" target="_blank" rel="noopener noreferrer">连接</a></p><ul><li>blockhash(uint blockNumber): (bytes32)给定区块的哈希值 – 只适用于256最近区块, 不包含当前区块。</li><li>block.coinbase: (address payable) 当前区块矿工的地址。</li><li>block.gaslimit: (uint) 当前区块的gaslimit。</li><li>block.number: (uint) 当前区块的number。</li><li>block.timestamp: (uint) 当前区块的时间戳，为unix纪元以来的秒。</li><li>gasleft(): (uint256) 剩余 gas。</li><li>msg.data: (bytes calldata) 完整call data。</li><li>msg.sender: (address payable) 消息发送者 (当前 caller)。</li><li>msg.sig: (bytes4) calldata的前四个字节 (function identifier)。</li><li>msg.value: (uint) 当前交易发送的wei值。</li></ul></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Github Action自动化部署静态页面 | hassan</title>
+    <meta name="description" content="基于Github Action自动化部署静态页面">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_blog_github-action.md.e50ed124.lean.js">
+    
+    <meta name="twitter:title" content="Github Action自动化部署静态页面 | hassan">
+  <meta property="og:title" content="Github Action自动化部署静态页面 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#vitepress、github-pages自动化部署">VitePress、Github Pages自动化部署</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#填坑">填坑</a><!----></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="github-action自动化部署静态页面" tabindex="-1">Github Action自动化部署静态页面 <a class="header-anchor" href="#github-action自动化部署静态页面" aria-hidden="true">#</a></h1><h2 id="vitepress、github-pages自动化部署" tabindex="-1">VitePress、Github Pages自动化部署 <a class="header-anchor" href="#vitepress、github-pages自动化部署" aria-hidden="true">#</a></h2><p>接上篇博客《VitePress、Github Pages搭建博客网站》，本篇博客我们通过Github的Action实现提交代码自动化部署，不用每次自己打包，再上传到项目中这么麻烦了。首选在Github中创建一个空白的分支，这里我们要把打包好的代码放到这个分支中，比如，这里我创建的是blog-pages分支，Github会把打包好的前端文件放到blog-pages这个分支中，同时我们需要修改Github Pages项目，访问的页面指向blog-pages分支的根目录下面，这里的操作没有什么技术含量不再做赘述，下面我把workflow文件贴出来，重点说明一下</p><div class="language-"><pre><code># name 可以自定义
+name: Deploy GitHub Pages
+
+# 触发条件：在 push 到 main/master 分支后，新的 Github 项目 应该都是 main，而之前的项目一般都是 master
+on:
+  push:
+    branches:
+      - main
+
+# 任务
+jobs:
+  build-and-deploy:
+    # 服务器环境：最新版 Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      # 拉取代码
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      # 生成静态文件
+      - name: Install and Build
+        run: |
+          npm ci
+          npm run build
+
+      # 部署到 GitHub Pages
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }} # 也就是我们刚才生成的 secret
+          branch: blog-pages # 部署到 blog-pages 分支，因为 main 分支存放的一般是源码，而 blog-pages 分支则用来存放生成的静态文件
+          folder: .vitepress/dist # github 打包生成静态文件的目录，action复制此目录的文件到blog-pages分支
+</code></pre></div><h2 id="填坑" tabindex="-1">填坑 <a class="header-anchor" href="#填坑" aria-hidden="true">#</a></h2><p>参数已经在代码中做了说明，几乎不需要修改就可以使用，但是最需要注意的一项是Deploy这一步，FOLDER参数一定要选对，一定要是Github打包生成静态文件的目录，要不然会部署失败的，本地可以先打包看下项目生成的静态文件位置，一般在Github上也是这个位置。我们也可以在Github中创建2个项目，一个是存放我们源代码的地方，一个是配置Github Pages页面的仓库，这个可以做到源码和静态文件分离，别人也不会影响到你写的内容，配置的时候参考JamesIves/github-pages-deploy-action说明文档。</p></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>

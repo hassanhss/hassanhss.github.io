@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Elasticsearch值_type | hassan</title>
+    <meta name="description" content="_type问题总结">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_es_es_type.md.63be964e.lean.js">
+    
+    <meta name="twitter:title" content="Elasticsearch值_type | hassan">
+  <meta property="og:title" content="Elasticsearch值_type | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#type产生的历史原因">_type产生的历史原因</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#为什么要删除映射类型-type">为什么要删除映射类型(Type)</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#映射类型的替代方案">映射类型的替代方案</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#每个文档-document-创建一个索引一个映射类型">每个文档(Document)创建一个索引一个映射类型</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#自定义type字段">自定义Type字段</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#删除映射类型计划">删除映射类型计划</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#elasticsearch-5-6-0-之前">Elasticsearch 5.6.0 之前</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#elasticsearch-6-x">Elasticsearch 6.x</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#创建索引">创建索引</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#创建映射">创建映射</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#参考">参考</a><!----></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="elasticsearch值-type" tabindex="-1">Elasticsearch值_type <a class="header-anchor" href="#elasticsearch值-type" aria-hidden="true">#</a></h1><h2 id="type产生的历史原因" tabindex="-1">_type产生的历史原因 <a class="header-anchor" href="#type产生的历史原因" aria-hidden="true">#</a></h2><p>Index：索引。复数是Indices。类似的数据放在一个索引,非类似的数据放不同索引, 一个索引也可以理解成一个关系型数据库；</p><p>Type：类型。</p><p>Document：文档。保存在某个index下,某种type的一个数据document,文档是json格式的,document就像是mysql中的某个table里面的内容，每一行对应的列叫属性。</p><p>可以将ES中的三个概念和MySQL类比：</p><ul><li>Index对应MySQL中的Database。</li><li><s>Type对应MySQL中的Table。</s></li><li>Document对应MySQL中表的记录。 整体对比如下图所示 <img src="/assets/es-db.1e8d2dd9.png" alt=""></li></ul><p>从Elasticsearch的第一个版本开始，每个文档(Document)都存储在一个索引(Index)中，并分配一个映射类型(Type)。映射类型(Type)用于表示被索引的文档或实体的类型，例如twitter索引可能有一个user类型和一个tweet类型。</p><p>每一个映射类型(Type)都可以有他自己的属性字段，因为，user映射类型可能有一个full_name属性字段，一个user_name属性字段，和一个email属性字段。而tweet映射类型可能有一个content属性字段，一个tweeted_at属性字段，像user映射类型一样，也可以有一个user_name属性字段。</p><p>每个文档(Document)都有一个包含类型名称的_type元数据字段，并且可以通过在URL中指定类型名称来限制搜索到一个或多个类型:</p><div class="language-"><pre><code>GET twitter/user,tweet/_search
+{
+  &quot;query&quot;: {
+    &quot;match&quot;: {
+      &quot;user_name&quot;: &quot;kimchy&quot;
+    }
+  }
+}
+</code></pre></div><p>映射类型(Type)字段与文档(Document)的_id相结合，生成一个_uid字段，因此具有相同_id的不同映射类型(Type)的文档(Document)可以存在于单个索引中。</p><h2 id="为什么要删除映射类型-type" tabindex="-1">为什么要删除映射类型(Type) <a class="header-anchor" href="#为什么要删除映射类型-type" aria-hidden="true">#</a></h2><p>最初，我们谈到“索引(Index)”类似于SQL数据库中的“数据库(Database)”，而“映射类型(Type)”相当于“表(Table)”。 这并不是一个很好的类比，会导致错误的假设。在SQL数据库中，表是相互独立的。一个表中的列与另一个表中具有相同名称的列无关。对于映射类型中的字段则不是这样。 在Elasticsearch索引中，在不同映射类型中具有相同名称的字段在内部由相同的Lucene字段支持。换句话说，使用上面的示例，user映射类型中的user_name字段与tweet映射类型中的user_name字段存储在完全相同的字段中，并且两个user_name字段必须在这两种类型中具有相同的映射(定义)。 例如，当您希望在同一索引中<em><strong>deleted</strong></em>在一个映射类型中是日期字段，在另一种映射类型是布尔字段时，这可能会导致失败。最重要的是，在同一个索引中存储具有很少或没有共同字段的不同实体会导致数据稀疏，并干扰Lucene有效压缩文档的能力。</p><h2 id="映射类型的替代方案" tabindex="-1">映射类型的替代方案 <a class="header-anchor" href="#映射类型的替代方案" aria-hidden="true">#</a></h2><h3 id="每个文档-document-创建一个索引一个映射类型" tabindex="-1">每个文档(Document)创建一个索引一个映射类型 <a class="header-anchor" href="#每个文档-document-创建一个索引一个映射类型" aria-hidden="true">#</a></h3><p>第一种选择是为每个文档类型提供一个索引。可以将tweet存储在tweets索引中，users存储在user索引中，而不是将tweet和users存储在单个twitter索引中。索引之间是完全独立的，因此索引之间不会有字段类型冲突。</p><p>这种方法有两个好处：</p><ul><li>数据可能是密集的，因此能更好的使用Lucene中的压缩技术。</li><li>在全文搜索中用于评分的术语统计数据可能更准确，因为同一索引中的所有文档都代表一个实体。</li></ul><p>每个索引可以根据它将包含的文档数量适当地调整大小:可以为user使用较少数量的主分片，而为twitter使用较多数量的主分片。</p><h3 id="自定义type字段" tabindex="-1">自定义Type字段 <a class="header-anchor" href="#自定义type字段" aria-hidden="true">#</a></h3><p>当然，集群中可以存在的主分片数量是有限的，因此您可能不希望为了只有几千个文档的集合而浪费整个分片。在这种情况下，您可以实现自己的自定义类型字段，其工作方式与旧的_type类似。</p><p>让我们以上面的user/tweet为例。最初，工作流看起来是这样的:</p><div class="language-"><pre><code>PUT twitter
+{
+  &quot;mappings&quot;: {
+    &quot;user&quot;: {
+      &quot;properties&quot;: {
+        &quot;name&quot;: { &quot;type&quot;: &quot;text&quot; },
+        &quot;user_name&quot;: { &quot;type&quot;: &quot;keyword&quot; },
+        &quot;email&quot;: { &quot;type&quot;: &quot;keyword&quot; }
+      }
+    },
+    &quot;tweet&quot;: {
+      &quot;properties&quot;: {
+        &quot;content&quot;: { &quot;type&quot;: &quot;text&quot; },
+        &quot;user_name&quot;: { &quot;type&quot;: &quot;keyword&quot; },
+        &quot;tweeted_at&quot;: { &quot;type&quot;: &quot;date&quot; }
+      }
+    }
+  }
+}
+
+PUT twitter/user/kimchy
+{
+  &quot;name&quot;: &quot;Shay Banon&quot;,
+  &quot;user_name&quot;: &quot;kimchy&quot;,
+  &quot;email&quot;: &quot;shay@kimchy.com&quot;
+}
+
+PUT twitter/tweet/1
+{
+  &quot;user_name&quot;: &quot;kimchy&quot;,
+  &quot;tweeted_at&quot;: &quot;2017-10-24T09:00:00Z&quot;,
+  &quot;content&quot;: &quot;Types are going away&quot;
+}
+
+GET twitter/tweet/_search
+{
+  &quot;query&quot;: {
+    &quot;match&quot;: {
+      &quot;user_name&quot;: &quot;kimchy&quot;
+    }
+  }
+}
+</code></pre></div><p>我们可以通过添加一个自定义类型字段来达到同样的效果，如下所示:</p><div class="language-"><pre><code>PUT twitter
+{
+  &quot;mappings&quot;: {
+    &quot;_doc&quot;: {
+      &quot;properties&quot;: {
+        &quot;type&quot;: { &quot;type&quot;: &quot;keyword&quot; }, 
+        &quot;name&quot;: { &quot;type&quot;: &quot;text&quot; },
+        &quot;user_name&quot;: { &quot;type&quot;: &quot;keyword&quot; },
+        &quot;email&quot;: { &quot;type&quot;: &quot;keyword&quot; },
+        &quot;content&quot;: { &quot;type&quot;: &quot;text&quot; },
+        &quot;tweeted_at&quot;: { &quot;type&quot;: &quot;date&quot; }
+      }
+    }
+  }
+}
+
+PUT twitter/_doc/user-kimchy
+{
+  &quot;type&quot;: &quot;user&quot;, 
+  &quot;name&quot;: &quot;Shay Banon&quot;,
+  &quot;user_name&quot;: &quot;kimchy&quot;,
+  &quot;email&quot;: &quot;shay@kimchy.com&quot;
+}
+
+PUT twitter/_doc/tweet-1
+{
+  &quot;type&quot;: &quot;tweet&quot;, 
+  &quot;user_name&quot;: &quot;kimchy&quot;,
+  &quot;tweeted_at&quot;: &quot;2017-10-24T09:00:00Z&quot;,
+  &quot;content&quot;: &quot;Types are going away&quot;
+}
+
+GET twitter/_search
+{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: {
+        &quot;match&quot;: {
+          &quot;user_name&quot;: &quot;kimchy&quot;
+        }
+      },
+      &quot;filter&quot;: {
+        &quot;match&quot;: {
+          &quot;type&quot;: &quot;tweet&quot; 
+        }
+      }
+    }
+  }
+}
+</code></pre></div><p>显式type字段代替隐式_type字段。</p><h2 id="删除映射类型计划" tabindex="-1">删除映射类型计划 <a class="header-anchor" href="#删除映射类型计划" aria-hidden="true">#</a></h2><p>Elasticsearch 5.6.0</p><ul><li>设置 index.mapping.single_type: true 将启用每个索引单一类型的行为，这将在Elasticsearch6.0中强制执行。</li></ul><p>Elasticsearch 6.x</p><ul><li>在5.x创建的索引还是能够在6.x版本运行，就像在5.x版本上一样。</li><li>6.x创建的索引，每个索引只有一个单一类型。该类型可以使用任何名称，但只能有一个名称。首选类型名是_doc，这样子，索引APIs的路径将会与7.0中的相同:PUT {index}/_doc/{id}和POST {index}/_doc</li><li>_type名称不能再与_id组合组成_uid字段。_uid字段已经成为_id字段的别名。</li><li>新的索引不再支持老式的父/子索引，而是应该使用join字段。</li><li>_default_映射类型也去掉了。</li><li>在6.8中，索引创建、索引模板和映射api支持一个查询字符串参数(include_type_name)，它表示请求和响应是否应该包含类型名。它默认为true，应该设置为一个显式值以准备升级到7.0。不设置include_type_name将导致deprecation警告。没有显式类型的索引将使用虚拟类型名_doc。</li></ul><p>Elasticsearch 7.x</p><ul><li>不建议在请求中指定类型。比如，为文档建立索引不再需要映射类型。新的索引APIs是PUT {index}/_doc/{id}，用于显式的id, POST {index}/_doc用于自动生成的id。注意，在7.0中，_doc是路径的永久部分，表示端点名称而不是文档类型。</li><li>索引创建、索引模板和映射api中的include_type_name参数默认为false。设置该参数将导致deprecation警告。</li><li>_default_映射类型也去掉了。</li></ul><p>Elasticsearch 8.x</p><ul><li>不再支持在请求中指定类型。</li><li>include_type_name参数被移除。</li></ul><h2 id="elasticsearch-5-6-0-之前" tabindex="-1">Elasticsearch 5.6.0 之前 <a class="header-anchor" href="#elasticsearch-5-6-0-之前" aria-hidden="true">#</a></h2><div class="language-"><pre><code>PUT twitter
+{
+  &quot;mappings&quot;: {
+    &quot;user&quot;: {
+      &quot;properties&quot;: {
+        &quot;name&quot;: { &quot;type&quot;: &quot;text&quot; },
+        &quot;user_name&quot;: { &quot;type&quot;: &quot;keyword&quot; },
+        &quot;email&quot;: { &quot;type&quot;: &quot;keyword&quot; }
+      }
+    },
+    &quot;tweet&quot;: {
+      &quot;properties&quot;: {
+        &quot;content&quot;: { &quot;type&quot;: &quot;text&quot; },
+        &quot;user_name&quot;: { &quot;type&quot;: &quot;keyword&quot; },
+        &quot;tweeted_at&quot;: { &quot;type&quot;: &quot;date&quot; }
+      }
+    }
+  }
+}
+
+PUT twitter/user/kimchy
+{
+  &quot;name&quot;: &quot;Shay Banon&quot;,
+  &quot;user_name&quot;: &quot;kimchy&quot;,
+  &quot;email&quot;: &quot;shay@kimchy.com&quot;
+}
+
+PUT twitter/tweet/1
+{
+  &quot;user_name&quot;: &quot;kimchy&quot;,
+  &quot;tweeted_at&quot;: &quot;2017-10-24T09:00:00Z&quot;,
+  &quot;content&quot;: &quot;Types are going away&quot;
+}
+
+GET twitter/tweet/_search
+{
+  &quot;query&quot;: {
+    &quot;match&quot;: {
+      &quot;user_name&quot;: &quot;kimchy&quot;
+    }
+  }
+}
+</code></pre></div><h2 id="elasticsearch-6-x" tabindex="-1">Elasticsearch 6.x <a class="header-anchor" href="#elasticsearch-6-x" aria-hidden="true">#</a></h2><div class="language-"><pre><code>PUT users
+{
+  &quot;settings&quot;: {
+    &quot;index.mapping.single_type&quot;: true
+  },
+  &quot;mappings&quot;: {
+    &quot;_doc&quot;: {
+      &quot;properties&quot;: {
+        &quot;name&quot;: {
+          &quot;type&quot;: &quot;text&quot;
+        },
+        &quot;user_name&quot;: {
+          &quot;type&quot;: &quot;keyword&quot;
+        },
+        &quot;email&quot;: {
+          &quot;type&quot;: &quot;keyword&quot;
+        }
+      }
+    }
+  }
+}
+
+PUT tweets
+{
+  &quot;settings&quot;: {
+    &quot;index.mapping.single_type&quot;: true
+  },
+  &quot;mappings&quot;: {
+    &quot;_doc&quot;: {
+      &quot;properties&quot;: {
+        &quot;content&quot;: {
+          &quot;type&quot;: &quot;text&quot;
+        },
+        &quot;user_name&quot;: {
+          &quot;type&quot;: &quot;keyword&quot;
+        },
+        &quot;tweeted_at&quot;: {
+          &quot;type&quot;: &quot;date&quot;
+        }
+      }
+    }
+  }
+}
+</code></pre></div><h2 id="创建索引" tabindex="-1">创建索引 <a class="header-anchor" href="#创建索引" aria-hidden="true">#</a></h2><div class="language-"><pre><code>PUT /index-demo
+{
+	&quot;settings&quot;: {
+		&quot;index&quot;: {
+			&quot;number_of_shards&quot;: 3,
+			&quot;number_of_replicas&quot;: 2
+		}
+	}
+}
+</code></pre></div><h2 id="创建映射" tabindex="-1">创建映射 <a class="header-anchor" href="#创建映射" aria-hidden="true">#</a></h2><p>在索引中每个文档都包括了一个或多个field（一行记录中包含一个或多个字段），创建映射就是向索引库中创建field的过程，下边是document和field与关系数据库的概念的类比：</p><p>文档（Document）----------------Row 行记录（数据库记录）</p><p>字段（Field）-------------------Columns 列</p><p>上边讲的创建索引库相当于关系数据库中的数据库还是表？</p><ol><li><p>如果相当于数据库就表示一个索引库可以创建很多不同类型的文档，这在ES中也是允许的。</p></li><li><p>如果相当于表就表示一个索引库只能存储相同类型的文档，ES官方建议 在一个索引库中只存储相同类型的文档。</p></li></ol><div class="language-"><pre><code>PUT /index-test-type/_mapping/_doc
+{
+	&quot;properties&quot;: {
+		&quot;type_id&quot;: {
+			&quot;type&quot;: &quot;long&quot;
+		},
+		&quot;type_name&quot;: {
+			&quot;type&quot;: &quot;text&quot;
+		}
+	}
+}
+</code></pre></div><div class="language-"><pre><code>PUT /index-test-type/
+{
+	&quot;settings&quot;: {
+		&quot;index&quot;: {
+			&quot;number_of_shards&quot;: 3,
+			&quot;number_of_replicas&quot;: 2
+		}
+	},
+	&quot;mappings&quot;: {
+		&quot;properties&quot;: {
+			&quot;type_id&quot;: {
+				&quot;type&quot;: &quot;long&quot;
+			},
+			&quot;type_name&quot;: {
+				&quot;type&quot;: &quot;text&quot;
+			}
+		}
+	}
+}
+</code></pre></div><h2 id="参考" tabindex="-1">参考 <a class="header-anchor" href="#参考" aria-hidden="true">#</a></h2><p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/removal-of-types.html" target="_blank" rel="noopener noreferrer">https://www.elastic.co/guide/en/elasticsearch/reference/7.17/removal-of-types.html</a></p></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>

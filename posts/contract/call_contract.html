@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Solidity调用其他合约 | hassan</title>
+    <meta name="description" content="调用其他合约方法">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_contract_call_contract.md.6ed55929.lean.js">
+    
+    <meta name="twitter:title" content="Solidity调用其他合约 | hassan">
+  <meta property="og:title" content="Solidity调用其他合约 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#目标合约">目标合约</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#调用othercontract合约">调用OtherContract合约</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#_1-传入合约地址">1. 传入合约地址</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#_2-传入合约变量">2. 传入合约变量</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#_3-创建合约变量">3. 创建合约变量</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#_4-调用合约并发送eth">4. 调用合约并发送ETH</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#参考">参考</a><!----></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="solidity调用其他合约" tabindex="-1">Solidity调用其他合约 <a class="header-anchor" href="#solidity调用其他合约" aria-hidden="true">#</a></h1><h2 id="目标合约" tabindex="-1">目标合约 <a class="header-anchor" href="#目标合约" aria-hidden="true">#</a></h2><p>我们先写一个简单的合约OtherContract来调用。</p><div class="language-"><pre><code>contract OtherContract {
+    uint256 private _x = 0; // 状态变量_x
+    // 收到eth的事件，记录amount和gas
+    event Log(uint amount, uint gas);
+    
+    // 返回合约ETH余额
+    function getBalance() view public returns(uint) {
+        return address(this).balance;
+    }
+
+    // 可以调整状态变量_x的函数，并且可以往合约转ETH (payable)
+    function setX(uint256 x) external payable{
+        _x = x;
+        // 如果转入ETH，则释放Log事件
+        if(msg.value &gt; 0){
+            emit Log(msg.value, gasleft());
+        }
+    }
+
+    // 读取_x
+    function getX() external view returns(uint x){
+        x = _x;
+    }
+}
+</code></pre></div><p>这个合约包含一个状态变量_x，一个事件Log在收到ETH时触发，三个函数：</p><ul><li>getBalance(): 返回合约ETH余额。</li><li>setX(): external payable函数，可以设置_x的值，并向合约发送ETH。</li><li>getX(): 读取_x的值。</li></ul><h2 id="调用othercontract合约" tabindex="-1">调用OtherContract合约 <a class="header-anchor" href="#调用othercontract合约" aria-hidden="true">#</a></h2><p>我们可以利用合约的地址和合约代码（或接口）来创建合约的引用：_Name(_Address)，其中_Name是合约名，_Address是合约地址。然后用合约的引用来调用它的函数：_Name(_Address).f()，其中f()是要调用的函数。</p><h3 id="_1-传入合约地址" tabindex="-1">1. 传入合约地址 <a class="header-anchor" href="#_1-传入合约地址" aria-hidden="true">#</a></h3><p>我们可以在函数里传入目标合约地址，生成目标合约的引用，然后调用目标函数。以调用OtherContract合约的setX函数为例，我们在新合约中写一个callSetX函数，传入已部署好的OtherContract合约地址_Address和setX的参数x：</p><div class="language-"><pre><code>    function callSetX(address _Address, uint256 x) external{
+        OtherContract(_Address).setX(x);
+    }
+</code></pre></div><h3 id="_2-传入合约变量" tabindex="-1">2. 传入合约变量 <a class="header-anchor" href="#_2-传入合约变量" aria-hidden="true">#</a></h3><p>我们可以直接在函数里传入合约的引用，只需要把上面参数的address类型改为目标合约名，比如OtherContract。下面例子实现了调用目标合约的getX()函数。</p><p>注意该函数参数OtherContract _Address底层类型仍然是address，生成的ABI中、调用callGetX时传入的参数都是address类型</p><div class="language-"><pre><code>    function callGetX(OtherContract _Address) external view returns(uint x){
+        x = _Address.getX();
+    }
+</code></pre></div><h3 id="_3-创建合约变量" tabindex="-1">3. 创建合约变量 <a class="header-anchor" href="#_3-创建合约变量" aria-hidden="true">#</a></h3><p>我们可以创建合约变量，然后通过它来调用目标函数。下面例子，我们给变量oc存储了OtherContract合约的引用：</p><div class="language-"><pre><code>    function callGetX2(address _Address) external view returns(uint x){
+        OtherContract oc = OtherContract(_Address);
+        x = oc.getX();
+    }
+</code></pre></div><h3 id="_4-调用合约并发送eth" tabindex="-1">4. 调用合约并发送ETH <a class="header-anchor" href="#_4-调用合约并发送eth" aria-hidden="true">#</a></h3><p>如果目标合约的函数是payable的，那么我们可以通过调用它来给合约转账：_Name(_Address).f{value: _Value}()，其中_Name是合约名，_Address是合约地址，f是目标函数名，_Value是要转的ETH数额（以wei为单位）。</p><p>OtherContract合约的setX函数是payable的，在下面这个例子中我们通过调用setX来往目标合约转账。</p><div class="language-"><pre><code>    function setXTransferETH(address otherContract, uint256 x) payable external{
+        OtherContract(otherContract).setX{value: msg.value}(x);
+    }
+</code></pre></div><h2 id="参考" tabindex="-1">参考 <a class="header-anchor" href="#参考" aria-hidden="true">#</a></h2><p><a href="https://benpaodewoniu.github.io/2022/01/03/solidity27/" target="_blank" rel="noopener noreferrer">https://benpaodewoniu.github.io/2022/01/03/solidity27/</a></p></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>

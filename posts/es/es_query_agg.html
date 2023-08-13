@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Elasticsearch查询和集合基础使用 | hassan</title>
+    <meta name="description" content="查询和聚合的基础使用方法">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_es_es_query_agg.md.07a875c6.lean.js">
+    
+    <meta name="twitter:title" content="Elasticsearch查询和集合基础使用 | hassan">
+  <meta property="og:title" content="Elasticsearch查询和集合基础使用 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#创建索引">创建索引</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#查询数据">查询数据</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#查询所有">查询所有</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#分页查询">分页查询</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#查询指定字段">查询指定字段</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#查询段落匹配">查询段落匹配</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#多条件查询：bool">多条件查询：bool</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#查询条件：query-or-filter">查询条件：query or filter</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#聚合查询：aggregation">聚合查询：Aggregation</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#简单聚合">简单聚合</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#嵌套聚合">嵌套聚合</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#对聚合结果排序">对聚合结果排序</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#参考">参考</a><!----></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="查询和聚合" tabindex="-1">查询和聚合 <a class="header-anchor" href="#查询和聚合" aria-hidden="true">#</a></h1><h2 id="创建索引" tabindex="-1">创建索引 <a class="header-anchor" href="#创建索引" aria-hidden="true">#</a></h2><div class="language-"><pre><code>PUT /test/_doc/1
+{
+    &quot;name&quot;:&quot;hassan&quot;
+}
+</code></pre></div><h2 id="查询数据" tabindex="-1">查询数据 <a class="header-anchor" href="#查询数据" aria-hidden="true">#</a></h2><h3 id="查询所有" tabindex="-1">查询所有 <a class="header-anchor" href="#查询所有" aria-hidden="true">#</a></h3><p><em><strong>match_all</strong></em> 表示查询所有的数据，<em><strong>sort</strong></em> 即按照什么字段排序</p><div class="language-"><pre><code>GET /test/_serach
+{
+    &quot;query&quot;:{&quot;match_all&quot;:{}},
+    &quot;sort&quot;:[
+        {&quot;account_id&quot;:&quot;asc&quot;}
+    ]
+}
+</code></pre></div><h3 id="分页查询" tabindex="-1">分页查询 <a class="header-anchor" href="#分页查询" aria-hidden="true">#</a></h3><p>本质上就from和size两个字段</p><div class="language-"><pre><code>GET /test/_search
+{
+    &quot;query&quot;:{&quot;match_all&quot;:{}},
+    &quot;sort&quot;:[
+        {&quot;account_id&quot;:&quot;ase&quot;}
+    ],
+    &quot;from&quot;:10,
+    &quot;size&quot;:10
+}
+</code></pre></div><h3 id="查询指定字段" tabindex="-1">查询指定字段 <a class="header-anchor" href="#查询指定字段" aria-hidden="true">#</a></h3><p>使用 <em><strong>match</strong></em> 查询特定字词，如下语句将查询address 字段中包含 mill 或者 lane的数据。</p><div class="language-"><pre><code>GET /test/_search
+{
+    &quot;query&quot;:{&quot;match&quot;:{&quot;address&quot;:&quot;mill lane&quot;}}
+}
+</code></pre></div><h3 id="查询段落匹配" tabindex="-1">查询段落匹配 <a class="header-anchor" href="#查询段落匹配" aria-hidden="true">#</a></h3><p>如果我们希望查询的条件是 address字段中包含 &quot;mill lane&quot;，则可以使用 <em><strong>match_phrase</strong></em></p><div class="language-"><pre><code>GET /bank/_search
+{
+  &quot;query&quot;: { &quot;match_phrase&quot;: { &quot;address&quot;: &quot;mill lane&quot; } }
+}
+</code></pre></div><h3 id="多条件查询：bool" tabindex="-1">多条件查询：bool <a class="header-anchor" href="#多条件查询：bool" aria-hidden="true">#</a></h3><p>如果要构造更复杂的查询，可以使用 <em><strong>bool</strong></em> 查询来组合多个查询条件。</p><p>例如，以下请求在bank索引中搜索40岁客户的帐户，但不包括居住在爱达荷州（ID）的任何人</p><div class="language-"><pre><code>GET /bank/_search
+{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: [
+        { &quot;match&quot;: { &quot;age&quot;: &quot;40&quot; } }
+      ],
+      &quot;must_not&quot;: [
+        { &quot;match&quot;: { &quot;state&quot;: &quot;ID&quot; } }
+      ]
+    }
+  }
+}
+</code></pre></div><p>其中must, should, must_not 和 filter 都是bool查询的子句。</p><h3 id="查询条件：query-or-filter" tabindex="-1">查询条件：query or filter <a class="header-anchor" href="#查询条件：query-or-filter" aria-hidden="true">#</a></h3><p>先看下如下查询, 在bool查询的子句中同时具备query/must 和 filter</p><div class="language-"><pre><code>GET /bank/_search
+{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: [
+        {
+          &quot;match&quot;: {
+            &quot;state&quot;: &quot;ND&quot;
+          }
+        }
+      ],
+      &quot;filter&quot;: [
+        {
+          &quot;term&quot;: {
+            &quot;age&quot;: &quot;40&quot;
+          }
+        },
+        {
+          &quot;range&quot;: {
+            &quot;balance&quot;: {
+              &quot;gte&quot;: 20000,
+              &quot;lte&quot;: 30000
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+</code></pre></div><p>两者都可以写查询条件，而且语法也类似。区别在于，query 上下文的条件是用来给文档打分的，匹配越好 _score 越高；filter 的条件只产生两种结果：符合与不符合，后者被过滤掉。</p><h2 id="聚合查询：aggregation" tabindex="-1">聚合查询：Aggregation <a class="header-anchor" href="#聚合查询：aggregation" aria-hidden="true">#</a></h2><h2 id="简单聚合" tabindex="-1">简单聚合 <a class="header-anchor" href="#简单聚合" aria-hidden="true">#</a></h2><p>比如我们希望计算出account每个州的统计数量， 使用aggs关键字对state字段聚合，被聚合的字段无需对分词统计，所以使用state.keyword对整个字段统计</p><div class="language-"><pre><code>GET /bank/_search
+{
+  &quot;size&quot;: 0,
+  &quot;aggs&quot;: {
+    &quot;group_by_state&quot;: {
+      &quot;terms&quot;: {
+        &quot;field&quot;: &quot;state.keyword&quot;
+      }
+    }
+  }
+}
+</code></pre></div><h2 id="嵌套聚合" tabindex="-1">嵌套聚合 <a class="header-anchor" href="#嵌套聚合" aria-hidden="true">#</a></h2><p>ES还可以处理个聚合条件的嵌套。</p><p>比如承接上个例子， 计算每个州的平均结余。涉及到的就是在对state分组的基础上，嵌套计算avg(balance):</p><div class="language-"><pre><code>GET /bank/_search
+{
+  &quot;size&quot;: 0,
+  &quot;aggs&quot;: {
+    &quot;group_by_state&quot;: {
+      &quot;terms&quot;: {
+        &quot;field&quot;: &quot;state.keyword&quot;
+      },
+      &quot;aggs&quot;: {
+        &quot;average_balance&quot;: {
+          &quot;avg&quot;: {
+            &quot;field&quot;: &quot;balance&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre></div><h3 id="对聚合结果排序" tabindex="-1">对聚合结果排序 <a class="header-anchor" href="#对聚合结果排序" aria-hidden="true">#</a></h3><p>可以通过在aggs中对嵌套聚合的结果进行排序</p><p>比如承接上个例子， 对嵌套计算出的avg(balance)，这里是average_balance，进行排序</p><div class="language-"><pre><code>GET /bank/_search
+{
+  &quot;size&quot;: 0,
+  &quot;aggs&quot;: {
+    &quot;group_by_state&quot;: {
+      &quot;terms&quot;: {
+        &quot;field&quot;: &quot;state.keyword&quot;,
+        &quot;order&quot;: {
+          &quot;average_balance&quot;: &quot;desc&quot;
+        }
+      },
+      &quot;aggs&quot;: {
+        &quot;average_balance&quot;: {
+          &quot;avg&quot;: {
+            &quot;field&quot;: &quot;balance&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre></div><h2 id="参考" tabindex="-1">参考 <a class="header-anchor" href="#参考" aria-hidden="true">#</a></h2><p><a href="https://pdai.tech/md/db/nosql-es/elasticsearch-x-usage.html" target="_blank" rel="noopener noreferrer">https://pdai.tech/md/db/nosql-es/elasticsearch-x-usage.html</a></p></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>

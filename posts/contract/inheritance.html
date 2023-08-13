@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Solidity继承 | hassan</title>
+    <meta name="description" content="继承">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_contract_inheritance.md.37901dd1.lean.js">
+    
+    <meta name="twitter:title" content="Solidity继承 | hassan">
+  <meta property="og:title" content="Solidity继承 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#继承">继承</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#规则">规则</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#修饰器的继承">修饰器的继承</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#构造函数的继承">构造函数的继承</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#调用父合约的函数">调用父合约的函数</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#钻石继承">钻石继承</a><!----></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="solidity继承" tabindex="-1">Solidity继承 <a class="header-anchor" href="#solidity继承" aria-hidden="true">#</a></h1><h2 id="继承" tabindex="-1">继承 <a class="header-anchor" href="#继承" aria-hidden="true">#</a></h2><p>Solidity中的继承（inheritance），包括简单继承，多重继承，以及修饰器（modifier）和构造函数（constructor）的继承。</p><h3 id="规则" tabindex="-1">规则 <a class="header-anchor" href="#规则" aria-hidden="true">#</a></h3><ul><li>virtual：父合约中的函数，如果希望自合约重写，需要加上virtual关键字。</li><li>ovrride：子合约重写父合约中的函数，需要加上关键字ovrride。</li></ul><p>注意：用ovrride修饰public变量，会重写与变量同名的getter函数，例如：</p><div class="language-"><pre><code>mapping(address =&gt; uint256) public override balanceOf;
+</code></pre></div><h4 id="简单继承" tabindex="-1">简单继承 <a class="header-anchor" href="#简单继承" aria-hidden="true">#</a></h4><p>我们先写一个简单的爷爷合约Yeye，里面包含1个Log事件和3个function: hip(), pop(), yeye()，输出都是”Yeye”。</p><div class="language-"><pre><code>contract Yeye {
+    event Log(string msg);
+
+    // 定义3个function: hip(), pop(), man()，Log值为Yeye。
+    function hip() public virtual{
+        emit Log(&quot;Yeye&quot;);
+    }
+
+    function pop() public virtual{
+        emit Log(&quot;Yeye&quot;);
+    }
+
+    function yeye() public virtual {
+        emit Log(&quot;Yeye&quot;);
+    }
+}
+</code></pre></div><p>我们再定义一个爸爸合约Baba，让他继承Yeye合约，语法就是contract Baba is Yeye，非常直观。在Baba合约里，我们重写一下hip()和pop()这两个函数，加上override关键字，并将他们的输出改为”Baba”；并且加一个新的函数baba，输出也是”Baba”。</p><div class="language-"><pre><code>contract Baba is Yeye{
+    // 继承两个function: hip()和pop()，输出改为Baba。
+    function hip() public virtual override{
+        emit Log(&quot;Baba&quot;);
+    }
+
+    function pop() public virtual override{
+        emit Log(&quot;Baba&quot;);
+    }
+
+    function baba() public virtual{
+        emit Log(&quot;Baba&quot;);
+    }
+}
+</code></pre></div><p>我们部署合约，可以看到Baba合约里有4个函数，其中hip()和pop()的输出被成功改写成”Baba”，而继承来的yeye()的输出仍然是”Yeye”。</p><h4 id="多重继承" tabindex="-1">多重继承 <a class="header-anchor" href="#多重继承" aria-hidden="true">#</a></h4><p>Solidity的合约可以继承多个合约。规则：</p><ol><li>继承时要按辈分最高到最低的顺序排。比如我们写一个Erzi合约，继承Yeye合约和Baba合约，那么就要写成contract Erzi is Yeye, Baba，而不能写成contract Erzi is Baba, Yeye，不然就会报错。</li><li>如果某一个函数在多个继承的合约里都存在，比如例子中的hip()和pop()，在子合约里必须重写，不然会报错。</li><li>重写在多个父合约中都重名的函数时，override关键字后面要加上所有父合约名字，例如override(Yeye, Baba)。</li></ol><div class="language-"><pre><code>contract Erzi is Yeye, Baba{
+    // 继承两个function: hip()和pop()，输出值为Erzi。
+    function hip() public virtual override(Yeye, Baba){
+        emit Log(&quot;Erzi&quot;);
+    }
+
+    function pop() public virtual override(Yeye, Baba) {
+        emit Log(&quot;Erzi&quot;);
+    }
+</code></pre></div><h3 id="修饰器的继承" tabindex="-1">修饰器的继承 <a class="header-anchor" href="#修饰器的继承" aria-hidden="true">#</a></h3><p>Solidity中的修饰器（Modifier）同样可以继承，用法与函数继承类似，在相应的地方加virtual和override关键字即可。</p><div class="language-"><pre><code>contract Base1 {
+    modifier exactDividedBy2And3(uint _a) virtual {
+        require(_a % 2 == 0 &amp;&amp; _a % 3 == 0);
+        _;
+    }
+}
+
+contract Identifier is Base1 {
+
+    //计算一个数分别被2除和被3除的值，但是传入的参数必须是2和3的倍数
+    function getExactDividedBy2And3(uint _dividend) public exactDividedBy2And3(_dividend) pure returns(uint, uint) {
+        return getExactDividedBy2And3WithoutModifier(_dividend);
+    }
+
+    //计算一个数分别被2除和被3除的值
+    function getExactDividedBy2And3WithoutModifier(uint _dividend) public pure returns(uint, uint){
+        uint div2 = _dividend / 2;
+        uint div3 = _dividend / 3;
+        return (div2, div3);
+    }
+}
+</code></pre></div><p>Identifier合约可以直接在代码中使用父合约中的exactDividedBy2And3修饰器，也可以利用override关键字重写修饰器：</p><div class="language-"><pre><code>    modifier exactDividedBy2And3(uint _a) override {
+        _;
+        require(_a % 2 == 0 &amp;&amp; _a % 3 == 0);
+    }
+</code></pre></div><h3 id="构造函数的继承" tabindex="-1">构造函数的继承 <a class="header-anchor" href="#构造函数的继承" aria-hidden="true">#</a></h3><p>子合约有两种方法继承父合约的构造函数。举个简单的例子，父合约A里面有一个状态变量a，并由构造函数的参数来确定：</p><div class="language-"><pre><code>// 构造函数的继承
+abstract contract A {
+    uint public a;
+
+    constructor(uint _a) {
+        a = _a;
+    }
+}
+</code></pre></div><ol><li>在继承时声明父构造函数的参数，例如：contract B is A(1)</li><li>在子合约的构造函数中声明构造函数的参数，例如：</li></ol><div class="language-"><pre><code>contract C is A {
+    constructor(uint _c) A(_c * _c) {}
+}
+</code></pre></div><h2 id="调用父合约的函数" tabindex="-1">调用父合约的函数 <a class="header-anchor" href="#调用父合约的函数" aria-hidden="true">#</a></h2><p>子合约有两种方式调用父合约的函数，直接调用和利用super关键字。</p><ol><li>直接调用：子合约可以直接用父合约名.函数名()的方式来调用父合约函数，例如Yeye.pop()。</li></ol><div class="language-"><pre><code>    function callParent() public{
+        Yeye.pop();
+    }
+</code></pre></div><ol start="2"><li>super关键字：子合约可以利用super.函数名()来调用最近的父合约函数。solidity继承关系按声明时从右到左的顺序是：contract Erzi is Yeye, Baba，那么Baba是最近的父合约，super.pop()将调用Baba.pop()而不是Yeye.pop()：</li></ol><div class="language-"><pre><code>    function callParentSuper() public{
+        // 将调用最近的父合约函数，Baba.pop()
+        super.pop();
+    }
+</code></pre></div><h2 id="钻石继承" tabindex="-1">钻石继承 <a class="header-anchor" href="#钻石继承" aria-hidden="true">#</a></h2><p>在面向对象编程中，钻石继承（菱形继承）指一个派生类同时有两个或两个以上的基类。</p><p>在多重+菱形继承链条上使用super关键字时，需要注意的是使用super会调用继承链条上的每一个合约的相关函数，而不是只调用最近的父合约。</p><p>我们先写一个合约God，再写Adam和Eve两个合约继承God合约，最后让创建合约people继承自Adam和Eve，每个合约都有foo和bar两个函数。</p><div class="language-"><pre><code>// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.13;
+
+/* 继承树：
+  God
+ /  \
+Adam Eve
+ \  /
+people
+*/
+
+contract God {
+    event Log(string message);
+
+    function foo() public virtual {
+        emit Log(&quot;God.foo called&quot;);
+    }
+
+    function bar() public virtual {
+        emit Log(&quot;God.bar called&quot;);
+    }
+}
+
+contract Adam is God {
+    function foo() public virtual override {
+        emit Log(&quot;Adam.foo called&quot;);
+    }
+
+    function bar() public virtual override {
+        emit Log(&quot;Adam.bar called&quot;);
+        super.bar();
+    }
+}
+
+contract Eve is God {
+    function foo() public virtual override {
+        emit Log(&quot;Eve.foo called&quot;);
+        Eve.foo();
+    }
+
+    function bar() public virtual override {
+        emit Log(&quot;Eve.bar called&quot;);
+        super.bar();
+    }
+}
+
+contract people is Adam, Eve {
+    function foo() public override(Adam, Eve) {
+        super.foo();
+    }
+
+    function bar() public override(Adam, Eve) {
+        super.bar();
+    }
+}
+</code></pre></div><p>在这个例子中，调用合约people中的super.bar()会依次调用Eve、Adam，最后是God合约。</p><p>虽然Eve、Adam都是God的子合约，但整个过程中God合约只会被调用一次。原因是Solidity借鉴了Python的方式，强制一个由基类构成的DAG（有向无环图）使其保证一个特定的顺序。</p></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>

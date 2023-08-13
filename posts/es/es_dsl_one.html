@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Elasticsearch常用DSL复合查询 | hassan</title>
+    <meta name="description" content="DSL常用查询语句">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_es_es_dsl_one.md.eed4561b.lean.js">
+    
+    <meta name="twitter:title" content="Elasticsearch常用DSL复合查询 | hassan">
+  <meta property="og:title" content="Elasticsearch常用DSL复合查询 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#bool-query-布尔查询">bool query(布尔查询)</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#boosting-query-提高查询">boosting query(提高查询)</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#constant-score-固定分数查询">constant_score(固定分数查询)</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#dis-max-最佳匹配查询">dis_max(最佳匹配查询)</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#function-score-函数查询">function_score(函数查询)</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#参考">参考</a><!----></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="dsl复合查询" tabindex="-1">DSL复合查询 <a class="header-anchor" href="#dsl复合查询" aria-hidden="true">#</a></h1><h2 id="bool-query-布尔查询" tabindex="-1">bool query(布尔查询) <a class="header-anchor" href="#bool-query-布尔查询" aria-hidden="true">#</a></h2><p>Bool查询有以下特点</p><ul><li>子查询可以以任意的顺序出现</li><li>可以嵌套多个查询，包括bool查询</li><li>如果bool查询中没有must条件，should中必须至少满足一条才会返回结果</li></ul><p>bool查询包含四种操作符，分别是must、must_not、should、filter。他们均是一种数组，数组里面是对应的判断条件。</p><ul><li>must：必须匹配。贡献算分</li><li>must_not：过滤子句，必须不能匹配，但不贡献算分</li><li>should：选择性匹配，至少满足一条。贡献算分</li><li>filter：过滤子句，必须匹配，但不贡献算分</li></ul><p>例子</p><div class="language-"><pre><code>POST _search
+{
+  &quot;query&quot;: {
+    &quot;bool&quot; : {
+      &quot;must&quot; : {
+        &quot;term&quot; : { &quot;user.id&quot; : &quot;kimchy&quot; }
+      },
+      &quot;filter&quot;: {
+        &quot;term&quot; : { &quot;tags&quot; : &quot;production&quot; }
+      },
+      &quot;must_not&quot; : {
+        &quot;range&quot; : {
+          &quot;age&quot; : { &quot;gte&quot; : 10, &quot;lte&quot; : 20 }
+        }
+      },
+      &quot;should&quot; : [
+        { &quot;term&quot; : { &quot;tags&quot; : &quot;env1&quot; } },
+        { &quot;term&quot; : { &quot;tags&quot; : &quot;deployed&quot; } }
+      ],
+      &quot;minimum_should_match&quot; : 1,
+      &quot;boost&quot; : 1.0
+    }
+  }
+}
+</code></pre></div><h2 id="boosting-query-提高查询" tabindex="-1">boosting query(提高查询) <a class="header-anchor" href="#boosting-query-提高查询" aria-hidden="true">#</a></h2><p>不同于bool查询，bool查询中只要一个子查询条件不匹配那么搜索的数据就不会出现。而boosting query则是降低显示的权重/优先级（即score)。</p><div class="language-"><pre><code>GET /test-dsl-boosting/_search
+{
+  &quot;query&quot;: {
+    &quot;boosting&quot;: {
+      &quot;positive&quot;: {
+        &quot;term&quot;: {
+          &quot;content&quot;: &quot;apple&quot;
+        }
+      },
+      &quot;negative&quot;: {
+        &quot;term&quot;: {
+          &quot;content&quot;: &quot;pie&quot;
+        }
+      },
+      &quot;negative_boost&quot;: 0.5
+    }
+  }
+}
+</code></pre></div><h2 id="constant-score-固定分数查询" tabindex="-1">constant_score(固定分数查询) <a class="header-anchor" href="#constant-score-固定分数查询" aria-hidden="true">#</a></h2><p>查询某个条件时，固定的返回指定的score；显然当不需要计算score时，只需要filter条件即可，因为filter context忽略score。</p><div class="language-"><pre><code>GET /test-dsl-constant/_search
+{
+  &quot;query&quot;: {
+    &quot;constant_score&quot;: {
+      &quot;filter&quot;: {
+        &quot;term&quot;: { &quot;content&quot;: &quot;apple&quot; }
+      },
+      &quot;boost&quot;: 1.2
+    }
+  }
+}
+</code></pre></div><h2 id="dis-max-最佳匹配查询" tabindex="-1">dis_max(最佳匹配查询) <a class="header-anchor" href="#dis-max-最佳匹配查询" aria-hidden="true">#</a></h2><p>分离最大化查询（Disjunction Max Query）指的是： 将任何与任一查询匹配的文档作为结果返回，但只将最佳匹配的评分作为查询的评分结果返回 。 不使用 bool 查询，可以使用 dis_max 即分离 最大化查询（Disjunction Max Query） 。分离（Disjunction）的意思是 或（or） ，这与可以把结合（conjunction）理解成 与（and） 相对应。分离最大化查询（Disjunction Max Query）指的是： 将任何与任一查询匹配的文档作为结果返回，但只将最佳匹配的评分作为查询的评分结果返回 ：</p><div class="language-"><pre><code>GET /test-dsl-dis-max/_search
+{
+    &quot;query&quot;: {
+        &quot;dis_max&quot;: {
+            &quot;queries&quot;: [
+                { &quot;match&quot;: { &quot;title&quot;: &quot;Brown fox&quot; }},
+                { &quot;match&quot;: { &quot;body&quot;:  &quot;Brown fox&quot; }}
+            ],
+            &quot;tie_breaker&quot;: 0
+        }
+    }
+}
+</code></pre></div><h2 id="function-score-函数查询" tabindex="-1">function_score(函数查询) <a class="header-anchor" href="#function-score-函数查询" aria-hidden="true">#</a></h2><p>简而言之就是利用自定义的function的方式来计算</p><ul><li>script_score 使用自定义的脚本来完全控制分值计算逻辑。如果你需要以上预定义函数之外的功能，可以根据需要通过脚本进行实现。</li><li>weight 对每份文档适用一个简单的提升，且该提升不会被归约：当weight为2时，结果为2 * _score。</li><li>random_score 使用一致性随机分值计算来对每个用户采用不同的结果排序方式，对相同用户仍然使用相同的排序方式。</li><li>field_value_factor 使用文档中某个字段的值来改变_score，比如将受欢迎程度或者投票数量考虑在内。</li><li>衰减函数(Decay Function) - linear，exp，gauss</li></ul><div class="language-"><pre><code>GET /_search
+{
+  &quot;query&quot;: {
+    &quot;function_score&quot;: {
+      &quot;query&quot;: { &quot;match_all&quot;: {} },
+      &quot;boost&quot;: &quot;5&quot;,
+      &quot;random_score&quot;: {}, 
+      &quot;boost_mode&quot;: &quot;multiply&quot;
+    }
+  }
+}
+</code></pre></div><h2 id="参考" tabindex="-1">参考 <a class="header-anchor" href="#参考" aria-hidden="true">#</a></h2><p><a href="https://pdai.tech/md/db/nosql-es/elasticsearch-x-dsl-com.html" target="_blank" rel="noopener noreferrer">https://pdai.tech/md/db/nosql-es/elasticsearch-x-dsl-com.html</a></p></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>

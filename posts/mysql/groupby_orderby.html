@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>分组查询取每组最新的数据 | hassan</title>
+    <meta name="description" content="MySQL数据库order by 和group by使用问题">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_mysql_groupby_orderby.md.3ab7ad05.lean.js">
+    
+    <meta name="twitter:title" content="分组查询取每组最新的数据 | hassan">
+  <meta property="og:title" content="分组查询取每组最新的数据 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#需求背景">需求背景</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#sql">SQL</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#原因分析-主要是翻译一下mysql官方文档">原因分析(主要是翻译一下MySQL官方文档)</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#使用合并或物化优化派生表和视图引用">使用合并或物化优化派生表和视图引用</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#总结">总结</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#参考文档">参考文档</a><!----></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="分组查询取每组最新的数据" tabindex="-1">分组查询取每组最新的数据 <a class="header-anchor" href="#分组查询取每组最新的数据" aria-hidden="true">#</a></h1><h2 id="需求背景" tabindex="-1">需求背景 <a class="header-anchor" href="#需求背景" aria-hidden="true">#</a></h2><p>MySQL数据库的表和数据为：</p><div class="language-"><pre><code>id	name	time
+1	aaa	    2023-02-17 09:02:09
+2	aaa	    2023-02-17 09:06:22
+3	aaa	    2023-02-17 09:09:43
+4	bbb	    2023-02-17 09:03:00
+5	bbb	    2023-02-17 09:09:11
+6	bbb	    2023-02-17 09:16:29
+7	ccc	    2023-02-17 09:03:48
+8	ccc	    2023-02-17 09:10:58
+9	ccc	    2023-02-17 09:15:12
+</code></pre></div><p>现在的需求是要根据name找出最新的一条数据。</p><h2 id="sql" tabindex="-1">SQL <a class="header-anchor" href="#sql" aria-hidden="true">#</a></h2><p>思路：先进行排序，然后再进行分组，获取每组的第一条。通常我们想到的是SQL如下：</p><div class="language-"><pre><code>SELECT
+	* 
+FROM
+	( SELECT * FROM groupby_test ORDER BY time DESC ) t1 
+GROUP BY
+	t1.NAME
+</code></pre></div><p>执行上面的SQL我们发现，找到的数据并不是我们想要的结果，取的数据都是每个name的第一条数据，执行结果如下：</p><div class="language-"><pre><code>id	name	time
+1	aaa	    2023-02-17 09:02:09
+4	bbb	    2023-02-17 09:03:00
+7	ccc	    2023-02-17 09:03:48
+</code></pre></div><p>通过分析数据库中的原始数据，正确的数据应该是3、6、9才对，给我们的感觉就是SQL语句中的ORDER BY time DESC并没有起作用。那我们explain一下，看下数据库到底是怎么执行的。explain的结果如下：</p><div class="language-"><pre><code>id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+1	SIMPLE	groupby_test		     ALL					                  9	     100.00	    Using temporary; Using filesort
+</code></pre></div><p>通过分析可以看出，我们写的是两个select语句但是MySQL在执行的时候，一步就执行完了，并没有按照我们写的SQL执行，这说明我们这里写的SQL有问题。改成如下SQL：</p><div class="language-"><pre><code>SELECT
+	* 
+FROM
+	( SELECT DISTINCT(id),NAME,time FROM groupby_test ORDER BY time DESC ) t1 
+GROUP BY
+	t1.NAME
+</code></pre></div><p>执行上面的SQL，返回的结果如下：</p><div class="language-"><pre><code>id	NAME	time
+3	aaa	    2023-02-17 09:09:43
+6	bbb	    2023-02-17 09:16:29
+9	ccc	    2023-02-17 09:15:12
+</code></pre></div><p>这个SQL返回的结果才符合我们的预期，返回的结果是我们期望的数据，为什么加了一个 <em><strong>DISTINCT</strong></em> 产生的区别这么大呢？我们先explain看下MySQL的执行结果：</p><div class="language-"><pre><code>id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+1	PRIMARY	&lt;derived2&gt;		        ALL					                     9	    100.00	    Using temporary; Using filesort
+2	DERIVED	groupby_test		    ALL					                     9	    100.00	    Using filesort
+</code></pre></div><p>这里可以看出，MySQL在执行的时候分两步执行，第一步先执行内部的SQL，第二步基于派生表做统计。接下来我们分析一下产生的原因。主要是参考MySQL官方文档。</p><h2 id="原因分析-主要是翻译一下mysql官方文档" tabindex="-1">原因分析(主要是翻译一下MySQL官方文档) <a class="header-anchor" href="#原因分析-主要是翻译一下mysql官方文档" aria-hidden="true">#</a></h2><h3 id="使用合并或物化优化派生表和视图引用" tabindex="-1">使用合并或物化优化派生表和视图引用 <a class="header-anchor" href="#使用合并或物化优化派生表和视图引用" aria-hidden="true">#</a></h3><p>优化器可以使用两种策略来处理派生表(同时也适用于视图)</p><ul><li>将派生表合并到外部查询块中</li><li>将派生表物化到内部临时表中</li></ul><p>例1：</p><div class="language-"><pre><code>SELECT * FROM (SELECT * FROM t1) AS derived_t1;
+</code></pre></div><p>通过合并派生表derived_t1，这个查询类似于下面的查询方式：</p><div class="language-"><pre><code>SELECT * FROM t1;
+</code></pre></div><p>例2：</p><div class="language-"><pre><code>SELECT *
+  FROM t1 JOIN (SELECT t2.f1 FROM t2) AS derived_t2 ON t1.f2=derived_t2.f1
+  WHERE t1.f1 &gt; 0;
+</code></pre></div><p>通过合并派生表derived_t2，这个查询类似于下面的查询方式：</p><div class="language-"><pre><code>SELECT t1.*, t2.f1
+  FROM t1 JOIN t2 ON t1.f2=t2.f1
+  WHERE t1.f1 &gt; 0;
+</code></pre></div><p>通过物化，derived_t1和derived_t2在各自的查询中都被视为单独的表。</p><p>优化器以相同的方式处理派生表和视图引用:它尽可能避免不必要的物化，从而支持将条件从外部查询下推到派生表，并产生更有效的执行计划。</p><p>如果合并将导致引用超过61个基表的外部查询块，优化器将选择物化。</p><p>如果这些条件都为真，优化器将派生表或视图引用中的ORDER BY子句传播到外部查询块:</p><ul><li>外部查询没有分组或聚合。</li><li>外部查询不指定DISTINCT、HAVING或ORDER BY。</li><li>外部查询将此派生表或视图引用作为FROM子句中的唯一源。</li></ul><p>否则，优化器将忽略ORDER BY子句。</p><p>以下方法可以影响优化器是否尝试将派生表和视图引用合并到外部查询块中:</p><ul><li>可以使用optimizer_switch系统变量的derived_merge标志，假设没有其他规则阻止合并。参见第8.9.2节“可切换优化”。默认情况下，该标志是启用的，允许合并。禁用该标志可以防止合并并避免ER_UPDATE_TABLE_USED错误。</li></ul><p>derived_merge标志也适用于不包含ALGORITHM子句的视图。因此，如果对于使用与子查询等价的表达式的视图引用发生ER_UPDATE_TABLE_USED错误，将ALGORITHM=TEMPTABLE添加到视图定义中可以防止合并，并优先于derived_merge值。</p><ul><li>可以通过在子查询中使用任何防止合并的构造来禁用合并，尽管这些构造对物化的影响没有那么明显。防止合并的构造对于派生表和视图引用是相同的: <ul><li>Aggregate functions (SUM(), MIN(), MAX(), COUNT(), and so forth)</li><li>DISTINCT</li><li>GROUP BY</li><li>HAVING</li><li>LIMIT</li><li>UNION or UNION ALL</li><li>Subqueries in the select list</li><li>Assignments to user variables</li><li>Refererences only to literal values (in this case, there is no underlying table)</li></ul></li></ul><p>derived_merge标志也适用于不包含ALGORITHM子句的视图。因此，如果对于使用与子查询等价的表达式的视图引用发生ER_UPDATE_TABLE_USED错误，将ALGORITHM=TEMPTABLE添加到视图定义中可以防止合并，并优先于当前的derived_merge值。</p><p>如果优化器选择物化策略而不是对派生表进行合并，它将按照以下方式处理查询:</p><ul><li>优化器将派生表物化推迟到查询执行期间需要其内容时。这可以提高性能，因为延迟实体化可能会导致根本不需要这样做。考虑一个将派生表的结果连接到另一个表的查询:如果优化器首先处理另一个表，并且发现它没有返回任何行，则不需要进一步执行连接，优化器可以完全跳过派生表的实体化。</li><li>在查询执行期间，优化器可以向派生表添加索引，以加快从中检索行的速度。</li></ul><p>考虑下面的EXPLAIN语句，对于一个包含派生表的SELECT查询:</p><div class="language-"><pre><code>EXPLAIN SELECT * FROM (SELECT * FROM t1) AS derived_t1;
+</code></pre></div><p>优化器通过将派生表延迟到SELECT执行期间需要结果时才实现它，从而避免物化派生表。在这种情况下，查询不会执行(因为它发生在EXPLAIN语句中)，因此永远不需要该结果。</p><p>即使对于已执行的查询，派生表物化的延迟也可能使优化器完全避免物化。当发生这种情况时，查询执行速度比执行实体化所需的时间要快。考虑下面的查询，它将一个派生表的结果连接到另一个表:</p><div class="language-"><pre><code>SELECT *
+  FROM t1 JOIN (SELECT t2.f1 FROM t2) AS derived_t2
+          ON t1.f2=derived_t2.f1
+  WHERE t1.f1 &gt; 0;
+</code></pre></div><p>如果优化首先处理t1，而WHERE子句产生的结果为空，则连接必须为空，派生表不需要物化。</p><p>对于派生表需要物化的情况，优化器可以向物化表添加索引，以加快对它的访问。如果这样的索引允许对表的ref访问，它可以大大减少查询执行期间读取的数据量。考虑以下查询:</p><div class="language-"><pre><code>SELECT *
+ FROM t1 JOIN (SELECT DISTINCT f1 FROM t2) AS derived_t2
+         ON t1.f1=derived_t2.f1;
+</code></pre></div><p>优化器从derived_t2构造列f1上的索引，如果这样做将允许对成本最低的执行计划使用ref访问。添加索引之后，优化器可以像对待带索引的普通表一样对待物化派生表，并且可以从生成的索引中获得类似的好处。与没有索引的查询执行成本相比，创建索引的开销可以忽略不计。如果ref访问将导致比其他访问方法更高的成本，优化器不会创建索引，也不会损失任何东西。</p><h2 id="总结" tabindex="-1">总结 <a class="header-anchor" href="#总结" aria-hidden="true">#</a></h2><p>我们这里使用了临时表排序，继而对其结果进行分组，结果显示失败，加了 <em><strong>DISTINCT</strong></em>, 后结果正确，原因是因为临时表（派生表derived table）中使用order by且使其生效，必须满足三个条件：</p><ul><li>外部查询禁止分组或者聚合</li><li>外部查询未指定having，HAVING， order by</li><li>外部查询将派生表或者视图作为from句中唯一指定源 不满足这三个条件，order by会被忽略。</li></ul><p>一旦外部表使用了group by，那么临时表（派生表 derived table）将不会执行filesort操作（即order by 会被忽略），所以在临时表中加了 <em><strong>DISTINCT</strong></em>。 加了之后就相当于关闭了该特性，所以也就生效了。</p><h2 id="参考文档" tabindex="-1">参考文档 <a class="header-anchor" href="#参考文档" aria-hidden="true">#</a></h2><p><a href="https://blog.csdn.net/u013066244/article/details/116461584" target="_blank" rel="noopener noreferrer">https://blog.csdn.net/u013066244/article/details/116461584</a></p><p><a href="https://dev.mysql.com/doc/refman/5.7/en/derived-table-optimization.html" target="_blank" rel="noopener noreferrer">https://dev.mysql.com/doc/refman/5.7/en/derived-table-optimization.html</a></p></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>

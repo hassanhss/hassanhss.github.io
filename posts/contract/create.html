@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Solidity在合约中创建合约、删除合约 | hassan</title>
+    <meta name="description" content="合约中创建合约、删除合约">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_contract_create.md.f074f6b8.lean.js">
+    
+    <meta name="twitter:title" content="Solidity在合约中创建合约、删除合约 | hassan">
+  <meta property="og:title" content="Solidity在合约中创建合约、删除合约 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#create">create</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#极简uniswap">极简Uniswap</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#create2">create2</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#create如何计算地址">create如何计算地址</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#create2如何计算地址">create2如何计算地址</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#如何使用create2">如何使用create2</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#使用create2创建极简uniswap2">使用create2创建极简Uniswap2</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#事先计算pair地址">事先计算Pair地址</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#如何使用selfdestruct">如何使用selfdestruct</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#例子">例子</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#注意事项">注意事项</a><!----></li></ul></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="solidity在合约中创建合约" tabindex="-1">Solidity在合约中创建合约 <a class="header-anchor" href="#solidity在合约中创建合约" aria-hidden="true">#</a></h1><p>在以太坊链上，用户（外部账户，EOA）可以创建智能合约，智能合约同样也可以创建新的智能合约。去中心化交易所uniswap就是利用工厂合约（Factory）创建了无数个币对合约（Pair）。</p><p>创建合约主要是使用create和create2方法。</p><h2 id="create" tabindex="-1">create <a class="header-anchor" href="#create" aria-hidden="true">#</a></h2><p>create的用法很简单，就是new一个合约，并传入新合约构造函数所需的参数：</p><div class="language-"><pre><code>Contract x = new Contract{value: _value}(params)
+</code></pre></div><p>其中Contract是要创建的合约名，x是合约对象（地址），如果构造函数是payable，可以创建时转入_value数量的ETH，params是新合约构造函数的参数。</p><h3 id="极简uniswap" tabindex="-1">极简Uniswap <a class="header-anchor" href="#极简uniswap" aria-hidden="true">#</a></h3><p>下面我们用create方法实现一个极简版的Uniswap：Pair币对合约负责管理币对地址，PairFactory工厂合约用于创建新的币对，并管理币对地址。</p><h4 id="pair合约" tabindex="-1">Pair合约 <a class="header-anchor" href="#pair合约" aria-hidden="true">#</a></h4><div class="language-"><pre><code>contract Pair{
+    address public factory; // 工厂合约地址
+    address public token0; // 代币1
+    address public token1; // 代币2
+
+    constructor() payable {
+        factory = msg.sender;
+    }
+
+    // called once by the factory at time of deployment
+    function initialize(address _token0, address _token1) external {
+        require(msg.sender == factory, &#39;UniswapV2: FORBIDDEN&#39;); // sufficient check
+        token0 = _token0;
+        token1 = _token1;
+    }
+}
+</code></pre></div><p>构造函数constructor在部署时将factory赋值为工厂合约地址。initialize函数会在Pair合约创建的时候被工厂合约调用一次，将token0和token1更新为币对中两种代币的地址。</p><h4 id="pairfactory" tabindex="-1">PairFactory <a class="header-anchor" href="#pairfactory" aria-hidden="true">#</a></h4><div class="language-"><pre><code>contract PairFactory{
+    mapping(address =&gt; mapping(address =&gt; address)) public getPair; // 通过两个代币地址查Pair地址
+    address[] public allPairs; // 保存所有Pair地址
+
+    function createPair(address tokenA, address tokenB) external returns (address pairAddr) {
+        // 创建新合约
+        Pair pair = new Pair(); 
+        // 调用新合约的initialize方法
+        pair.initialize(tokenA, tokenB);
+        // 更新地址map
+        pairAddr = address(pair);
+        allPairs.push(pairAddr);
+        getPair[tokenA][tokenB] = pairAddr;
+        getPair[tokenB][tokenA] = pairAddr;
+    }
+}
+</code></pre></div><p>工厂合约（PairFactory）有两个状态变量getPair是两个代币地址到币对地址的map，方便根据代币找到币对地址；allPairs是币对地址的数组，存储了所有代币地址。</p><p>PairFactory合约只有一个createPair函数，根据输入的两个代币地址tokenA和tokenB来创建新的Pair合约。其中</p><div class="language-"><pre><code>    Pair pair = new Pair(); 
+</code></pre></div><p>就是创建合约的代码，非常简单。大家可以部署好PairFactory合约，然后用下面两个地址作为参数调用createPair，看看创建的币对地址是什么：</p><div class="language-"><pre><code>WBNB地址: 0x2c44b726ADF1963cA47Af88B284C06f30380fC78
+BSC链上的PEOPLE地址:
+0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c
+</code></pre></div><h2 id="create2" tabindex="-1">create2 <a class="header-anchor" href="#create2" aria-hidden="true">#</a></h2><p>REATE2 操作码使我们在智能合约部署在以太坊网络之前就能预测合约的地址。Uniswap创建Pair合约用的就是CREATE2而不是CREATE。</p><h3 id="create如何计算地址" tabindex="-1">create如何计算地址 <a class="header-anchor" href="#create如何计算地址" aria-hidden="true">#</a></h3><p>智能合约可以由其他合约和普通账户利用CREATE操作码创建。 在这两种情况下，新合约的地址都以相同的方式计算：创建者的地址(通常为部署的钱包地址或者合约地址)和nonce(该地址发送交易的总数,对于合约账户是创建的合约总数,每创建一个合约nonce+1))的哈希。</p><div class="language-"><pre><code>新地址 = hash(创建者地址, nonce)
+</code></pre></div><p>创建者地址不会变，但nonce可能会随时间而改变，因此用CREATE创建的合约地址不好预测。</p><h3 id="create2如何计算地址" tabindex="-1">create2如何计算地址 <a class="header-anchor" href="#create2如何计算地址" aria-hidden="true">#</a></h3><p>CREATE2的目的是为了让合约地址独立于未来的事件。不管未来区块链上发生了什么，你都可以把合约部署在事先计算好的地址上。用CREATE2创建的合约地址由4个部分决定：</p><ul><li>0xFF：一个常数，避免和CREATE冲突</li><li>创建者地址</li><li>salt（盐）：一个创建者给定的数值</li><li>待部署合约的字节码（bytecode）</li></ul><div class="language-"><pre><code>新地址 = hash(&quot;0xFF&quot;,创建者地址, salt, bytecode)
+</code></pre></div><p>CREATE2 确保，如果创建者使用 CREATE2 和提供的 salt 部署给定的合约bytecode，它将存储在 新地址 中。</p><h2 id="如何使用create2" tabindex="-1">如何使用create2 <a class="header-anchor" href="#如何使用create2" aria-hidden="true">#</a></h2><p>CREATE2的用法和之前讲的Create类似，同样是new一个合约，并传入新合约构造函数所需的参数，只不过要多传一个salt参数：</p><div class="language-"><pre><code>Contract x = new Contract{salt: _salt, value: _value}(params)
+</code></pre></div><p>其中Contract是要创建的合约名，x是合约对象（地址），_salt是指定的盐；如果构造函数是payable，可以创建时转入_value数量的ETH，params是新合约构造函数的参数。</p><h3 id="使用create2创建极简uniswap2" tabindex="-1">使用create2创建极简Uniswap2 <a class="header-anchor" href="#使用create2创建极简uniswap2" aria-hidden="true">#</a></h3><h4 id="pair合约-1" tabindex="-1">Pair合约 <a class="header-anchor" href="#pair合约-1" aria-hidden="true">#</a></h4><div class="language-"><pre><code>contract Pair{
+    address public factory; // 工厂合约地址
+    address public token0; // 代币1
+    address public token1; // 代币2
+
+    constructor() payable {
+        factory = msg.sender;
+    }
+
+    // called once by the factory at time of deployment
+    function initialize(address _token0, address _token1) external {
+        require(msg.sender == factory, &#39;UniswapV2: FORBIDDEN&#39;); // sufficient check
+        token0 = _token0;
+        token1 = _token1;
+    }
+}
+</code></pre></div><p>Pair合约很简单，包含3个状态变量：factory，token0和token1。</p><p>构造函数constructor在部署时将factory赋值为工厂合约地址。initialize函数会在Pair合约创建的时候被工厂合约调用一次，将token0和token1更新为币对中两种代币的地址。</p><h4 id="pairfactory2" tabindex="-1">PairFactory2 <a class="header-anchor" href="#pairfactory2" aria-hidden="true">#</a></h4><div class="language-"><pre><code>contract PairFactory2{
+    mapping(address =&gt; mapping(address =&gt; address)) public getPair; // 通过两个代币地址查Pair地址
+    address[] public allPairs; // 保存所有Pair地址
+
+    function createPair2(address tokenA, address tokenB) external returns (address pairAddr) {
+        require(tokenA != tokenB, &#39;IDENTICAL_ADDRESSES&#39;); //避免tokenA和tokenB相同产生的冲突
+        // 计算用tokenA和tokenB地址计算salt
+        (address token0, address token1) = tokenA &lt; tokenB ? (tokenA, tokenB) : (tokenB, tokenA); //将tokenA和tokenB按大小排序
+        bytes32 salt = keccak256(abi.encodePacked(token0, token1));
+        // 用create2部署新合约
+        Pair pair = new Pair{salt: salt}(); 
+        // 调用新合约的initialize方法
+        pair.initialize(tokenA, tokenB);
+        // 更新地址map
+        pairAddr = address(pair);
+        allPairs.push(pairAddr);
+        getPair[tokenA][tokenB] = pairAddr;
+        getPair[tokenB][tokenA] = pairAddr;
+    }
+}
+</code></pre></div><p>工厂合约（PairFactory2）有两个状态变量getPair是两个代币地址到币对地址的map，方便根据代币找到币对地址；allPairs是币对地址的数组，存储了所有币对地址。</p><p>PairFactory2合约只有一个createPair2函数，使用CREATE2根据输入的两个代币地址tokenA和tokenB来创建新的Pair合约。其中</p><div class="language-"><pre><code>    Pair pair = new Pair{salt: salt}(); 
+</code></pre></div><p>就是利用CREATE2创建合约的代码，非常简单，而salt为token1和token2的hash：</p><div class="language-"><pre><code>    bytes32 salt = keccak256(abi.encodePacked(token0, token1));
+</code></pre></div><h2 id="事先计算pair地址" tabindex="-1">事先计算Pair地址 <a class="header-anchor" href="#事先计算pair地址" aria-hidden="true">#</a></h2><div class="language-"><pre><code>    // 提前计算pair合约地址
+    function calculateAddr(address tokenA, address tokenB) public view returns(address predictedAddress){
+        require(tokenA != tokenB, &#39;IDENTICAL_ADDRESSES&#39;); //避免tokenA和tokenB相同产生的冲突
+        // 计算用tokenA和tokenB地址计算salt
+        (address token0, address token1) = tokenA &lt; tokenB ? (tokenA, tokenB) : (tokenB, tokenA); //将tokenA和tokenB按大小排序
+        bytes32 salt = keccak256(abi.encodePacked(token0, token1));
+        // 计算合约地址方法 hash()
+        predictedAddress = address(uint160(uint(keccak256(abi.encodePacked(
+            bytes1(0xff),
+            address(this),
+            salt,
+            keccak256(type(Pair).creationCode)
+        )))));
+    }
+</code></pre></div><p>我们写了一个calculateAddr函数来事先计算tokenA和tokenB将会生成的Pair地址。通过它，我们可以验证我们事先计算的地址和实际地址是否相同。</p><h1 id="selfdestruct删除合约" tabindex="-1">selfdestruct删除合约 <a class="header-anchor" href="#selfdestruct删除合约" aria-hidden="true">#</a></h1><p>selfdestruct命令可以用来删除智能合约，并将该合约剩余ETH转到指定地址。selfdestruct是为了应对合约出错的极端情况而设计的。它最早被命名为suicide（自杀），但是这个词太敏感。为了保护抑郁的程序员，改名为selfdestruct。</p><h2 id="如何使用selfdestruct" tabindex="-1">如何使用selfdestruct <a class="header-anchor" href="#如何使用selfdestruct" aria-hidden="true">#</a></h2><p>selfdestruct使用起来非常简单：</p><div class="language-"><pre><code>selfdestruct(_addr)；
+</code></pre></div><p>其中_addr是接收合约中剩余ETH的地址。</p><h2 id="例子" tabindex="-1">例子 <a class="header-anchor" href="#例子" aria-hidden="true">#</a></h2><div class="language-"><pre><code>contract DeleteContract {
+
+    uint public value = 10;
+
+    constructor() payable {}
+
+    receive() external payable {}
+
+    function deleteContract() external {
+        // 调用selfdestruct销毁合约，并把剩余的ETH转给msg.sender
+        selfdestruct(payable(msg.sender));
+    }
+
+    function getBalance() external view returns(uint balance){
+        balance = address(this).balance;
+    }
+}
+</code></pre></div><p>在DeleteContract合约中，我们写了一个public状态变量value，两个函数：getBalance()用于获取合约ETH余额，deleteContract()用于自毁合约，并把ETH转入给发起人。</p><p>部署好合约后，我们向DeleteContract合约转入1 ETH。这时，getBalance()会返回1 ETH，value变量是10。</p><p>当我们调用deleteContract()函数，合约将自毁，所有变量都清空，此时value变为默认值0，getBalance()也返回空值。</p><h3 id="注意事项" tabindex="-1">注意事项 <a class="header-anchor" href="#注意事项" aria-hidden="true">#</a></h3><ol><li>对外提供合约销毁接口时，最好设置为只有合约所有者可以调用，可以使用函数修饰符onlyOwner进行函数声明。</li><li>当合约被销毁后与智能合约的交互也能成功，并且返回0。</li><li>当合约中有selfdestruct功能时常常会带来安全问题和信任问题，合约中的Selfdestruct功能会为攻击者打开攻击向量(例如使用selfdestruct向一个合约频繁转入token进行攻击，这将大大节省了GAS的费用，虽然很少人这么做)，此外，此功能还会降低用户对合约的信心。</li></ol></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>

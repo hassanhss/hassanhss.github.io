@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MySQL分区表 | hassan</title>
+    <meta name="description" content="MySQL分区表相关问题实践">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.a5662684.js">
+    <link rel="modulepreload" href="/assets/posts_mysql_mysql_partition.md.05199b35.lean.js">
+    
+    <meta name="twitter:title" content="MySQL分区表 | hassan">
+  <meta property="og:title" content="MySQL分区表 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#分区的目的及分区类型">分区的目的及分区类型</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#分区操作示例">分区操作示例</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#分区注意事项及适用场景">分区注意事项及适用场景</a><!----></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="分区" tabindex="-1">分区 <a class="header-anchor" href="#分区" aria-hidden="true">#</a></h1><p>分区是一种表的设计模式，通俗的讲就表分区就是将一个大表，根据条件分割成若干个小表，在逻辑上看最终只是一张表，但底层是由多个物理区块组成的。但是对于应用程序来讲，分区的表和没有分区的表是一样的。换句话来讲，分区表是透明的，只是数据库对于数据的重新整理。</p><h2 id="分区的目的及分区类型" tabindex="-1">分区的目的及分区类型 <a class="header-anchor" href="#分区的目的及分区类型" aria-hidden="true">#</a></h2><p>MySQL在创建表的时候可以通过使用PARTITION BY子句定义每个分区存放的数据。在执行查询的时候，优化器根据分区定义过滤那些没有我们需要的数据的分区，这样查询就可以无需扫描所有分区，只需要查找包含需要数据的分区即可。</p><p>分区的另一个目的是将数据按照一个较粗的粒度分别存放在不同的表中。这样做可以将相关的数据存放在一起，另外，当我们想要一次批量删除整个分区的数据也会变得很方便。</p><p>下面简单介绍下四种常见的分区类型：</p><ul><li>RANGE分区：最为常用，基于属于一个给定连续区间的列值，把多行分配给分区。最常见的是基于时间字段。</li><li>LIST分区：LIST分区和RANGE分区类似，区别在于LIST是枚举值列表的集合，RANGE是连续的区间值的集合。</li><li>HASH分区：基于用户定义的表达式的返回值来进行选择的分区，该表达式使用将要插入到表中的这些行的列值进行计算。这个函数可以包含MySQL中有效的、产生非负整数值的任何表达式。</li><li>KEY分区：类似于按HASH分区，区别在于KEY分区只支持计算一列或多列，且MySQL服务器提供其自身的哈希函数。必须有一列或多列包含整数值。</li></ul><p>上述四种分区类型中，RANGE分区即范围分区是最常用的。RANGE分区的特点是多个分区的范围要连续，但是不能重叠，默认情况下使用VALUES LESS THAN属性，即每个分区不包括指定的那个值。</p><h2 id="分区操作示例" tabindex="-1">分区操作示例 <a class="header-anchor" href="#分区操作示例" aria-hidden="true">#</a></h2><div class="language-"><pre><code># 创建分区表
+mysql&gt; CREATE TABLE `tr` (
+    -&gt;   `id` INT, 
+    -&gt;   `name` VARCHAR(50), 
+    -&gt;   `purchased` DATE
+    -&gt; ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    -&gt; PARTITION BY RANGE( YEAR(purchased) ) (
+    -&gt; PARTITION p0 VALUES LESS THAN (1990),
+    -&gt; PARTITION p1 VALUES LESS THAN (1995),
+    -&gt; PARTITION p2 VALUES LESS THAN (2000),
+    -&gt; PARTITION p3 VALUES LESS THAN (2005),
+    -&gt; PARTITION p4 VALUES LESS THAN (2010),
+    -&gt; PARTITION p5 VALUES LESS THAN (2015)
+    -&gt; );
+Query OK, 0 rows affected (0.28 sec)
+
+# 插入数据
+mysql&gt; INSERT INTO `tr` VALUES
+    -&gt;     (1, &#39;desk organiser&#39;, &#39;2003-10-15&#39;),
+    -&gt;     (2, &#39;alarm clock&#39;, &#39;1997-11-05&#39;),
+    -&gt;     (3, &#39;chair&#39;, &#39;2009-03-10&#39;),
+    -&gt;     (4, &#39;bookcase&#39;, &#39;1989-01-10&#39;),
+    -&gt;     (5, &#39;exercise bike&#39;, &#39;2014-05-09&#39;),
+    -&gt;     (6, &#39;sofa&#39;, &#39;1987-06-05&#39;),
+    -&gt;     (7, &#39;espresso maker&#39;, &#39;2011-11-22&#39;),
+    -&gt;     (8, &#39;aquarium&#39;, &#39;1992-08-04&#39;),
+    -&gt;     (9, &#39;study desk&#39;, &#39;2006-09-16&#39;),
+    -&gt;     (10, &#39;lava lamp&#39;, &#39;1998-12-25&#39;);
+Query OK, 10 rows affected (0.03 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+</code></pre></div><p>创建后可以看到，每个分区都会对应1个ibd文件。上面创建语句还是很好理解的，在此分区表中，通过YEAR函数取出DATE日期中的年份并转化为整型，年份小于1990的存储在分区p0中，小于1995的存储在分区p1中，以此类推。请注意，每个分区的定义顺序是从最低到最高。为了防止插入的数据因找不到相应分区而报错，我们应该及时创建新的分区。下面继续展示关于分区维护的其他操作。</p><div class="language-"><pre><code># 查看某个分区的数据
+mysql&gt; SELECT * FROM tr PARTITION (p2);
++------+-------------+------------+
+| id   | name        | purchased  |
++------+-------------+------------+
+|    2 | alarm clock | 1997-11-05 |
+|   10 | lava lamp   | 1998-12-25 |
++------+-------------+------------+
+2 rows in set (0.00 sec)
+
+# 增加分区
+mysql&gt; alter table tr add partition(
+    -&gt; PARTITION p6 VALUES LESS THAN (2020)
+    -&gt; );
+Query OK, 0 rows affected (0.06 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+# 拆分分区
+mysql&gt; alter table tr reorganize partition p5 into(
+    -&gt;   partition s0 values less than(2012),
+    -&gt;   partition s1 values less than(2015)
+    -&gt; );
+Query OK, 0 rows affected (0.26 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+# 合并分区
+mysql&gt; alter table tr reorganize partition s0,s1 into ( 
+    -&gt;     partition p5 values less than (2015) 
+    -&gt; );
+Query OK, 0 rows affected (0.12 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+# 清空某分区的数据
+mysql&gt; alter table tr truncate partition p0;
+Query OK, 0 rows affected (0.11 sec)
+
+# 删除分区
+mysql&gt; alter table tr drop partition p1;
+Query OK, 0 rows affected (0.06 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+# 交换分区
+# 先创建与分区表同样结构的交换表
+mysql&gt; CREATE TABLE `tr_archive` (
+    -&gt;   `id` INT, 
+    -&gt;   `name` VARCHAR(50), 
+    -&gt;   `purchased` DATE
+    -&gt; ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+Query OK, 0 rows affected (0.28 sec)
+# 执行exchange交换分区 
+mysql&gt; alter table tr exchange PARTITION p2 with table tr_archive;
+Query OK, 0 rows affected (0.13 sec)    
+</code></pre></div><h2 id="分区注意事项及适用场景" tabindex="-1">分区注意事项及适用场景 <a class="header-anchor" href="#分区注意事项及适用场景" aria-hidden="true">#</a></h2><p>其实分区表的使用有很多限制和需要注意的事项，参考官方文档，简要总结几点如下：</p><ul><li>分区字段必须是整数类型或解析为整数的表达式。</li><li>分区字段建议设置为NOT NULL，若某行数据分区字段为null，在RANGE分区中，该行数据会划分到最小的分区里。</li><li>MySQL分区中如果存在主键或唯一键，则分区列必须包含在其中。</li><li>Innodb分区表不支持外键。</li><li>更改sql_mode模式可能影响分区表的表现。</li><li>分区表不影响自增列。</li></ul></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"catalog_content.md\":\"d86ff705\",\"index.md\":\"c10b30fa\",\"page_2.md\":\"e6bb27dd\",\"page_3.md\":\"525e0d9e\",\"page_4.md\":\"d1ed67f6\",\"page_5.md\":\"11bcec30\",\"page_6.md\":\"0589eed0\",\"pages_about.md\":\"0c48d058\",\"pages_archives.md\":\"30483b77\",\"pages_tags.md\":\"28d7fc21\",\"posts_blog_github-action.md\":\"e50ed124\",\"posts_blog_vitepress-github.md\":\"35132ac7\",\"posts_contract_abi.md\":\"5362b7cd\",\"posts_contract_abstract_interface.md\":\"4e95508f\",\"posts_contract_call.md\":\"64629e48\",\"posts_contract_call_contract.md\":\"6ed55929\",\"posts_contract_constructor_modifer.md\":\"9e88c878\",\"posts_contract_create.md\":\"f074f6b8\",\"posts_contract_data_reference.md\":\"4b255b0f\",\"posts_contract_data_storage.md\":\"05e6a694\",\"posts_contract_delegatecall.md\":\"cc4a5038\",\"posts_contract_event.md\":\"4abc80bd\",\"posts_contract_exception.md\":\"719bceea\",\"posts_contract_fun_overloading.md\":\"1ef0df6b\",\"posts_contract_fun_return_val.md\":\"8bc49729\",\"posts_contract_fun_type.md\":\"08e7fecb\",\"posts_contract_import.md\":\"a2afb9a9\",\"posts_contract_inheritance.md\":\"37901dd1\",\"posts_contract_library.md\":\"c9a0cf76\",\"posts_contract_mapping.md\":\"d3ba9296\",\"posts_contract_receive_eth.md\":\"605ae6f8\",\"posts_contract_selector.md\":\"98f01400\",\"posts_contract_send_eth.md\":\"4326dca1\",\"posts_contract_value_type.md\":\"a2e59b2a\",\"posts_docker_accelerator.md\":\"36e08a0e\",\"posts_es_es_base_concept.md\":\"00283ad8\",\"posts_es_es_dsl_one.md\":\"eed4561b\",\"posts_es_es_dsl_three.md\":\"d2c0b379\",\"posts_es_es_dsl_two.md\":\"c122aa60\",\"posts_es_es_index.md\":\"77f18ef1\",\"posts_es_es_query_agg.md\":\"07a875c6\",\"posts_es_es_type.md\":\"63be964e\",\"posts_git_git-learn.md\":\"c0cdd15a\",\"posts_linux_linux_fork.md\":\"19ef5a41\",\"posts_linux_linux_pipe.md\":\"ee3cccf6\",\"posts_linux_linux_recv.md\":\"a4fa937f\",\"posts_mysql_groupby_orderby.md\":\"3ab7ad05\",\"posts_mysql_mysql_lock_one.md\":\"68bbaf9c\",\"posts_mysql_mysql_mvcc.md\":\"0ea92079\",\"posts_mysql_mysql_partition.md\":\"05199b35\",\"posts_mysql_mysql_transaction.md\":\"814564e1\",\"posts_network_tcp-model.md\":\"657d2eb0\",\"posts_network_tcp-three-shark.md\":\"3b87845d\",\"posts_network_tcp-time_wait.md\":\"7e827603\",\"posts_network_tpcip-one.md\":\"5c48ae81\",\"posts_personal_information.md\":\"82225e1d\",\"posts_personal_study.md\":\"db3bb716\",\"posts_personal_think-habit.md\":\"2d02c042\",\"posts_personal_think-object.md\":\"db4c9be6\",\"posts_personal_work-five.md\":\"efe4c215\",\"posts_tools_parallel-centos.md\":\"231dcb2a\"}")</script>
+    <script type="module" async src="/assets/app.a5662684.js"></script>
+    
+  </body>
+</html>
