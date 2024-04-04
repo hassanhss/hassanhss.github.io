@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Elasticsearch常用查询 | hassan</title>
+    <meta name="description" content="elasticsearch常用查询语法">
+    <link rel="stylesheet" href="/assets/style.dd5de40c.css">
+    <link rel="modulepreload" href="/assets/app.772c5167.js">
+    <link rel="modulepreload" href="/assets/posts_es_es_dsl_query.md.734f81a6.lean.js">
+    
+    <meta name="twitter:title" content="Elasticsearch常用查询 | hassan">
+  <meta property="og:title" content="Elasticsearch常用查询 | hassan">
+  </head>
+  <body>
+    <div id="app"><!--[--><!--[--><div class="theme"><header class="nav-bar" data-v-40587210><div class="sidebar-button" data-v-40587210><svg class="icon" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z" class></path></svg></div><a class="nav-bar-title" href="/" aria-label="hassan, back to home" data-v-40587210 data-v-016a8bd8><!----> hassan</a><div class="flex-grow" data-v-40587210></div><div class="nav" data-v-40587210><nav class="nav-links" data-v-40587210 data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav></div><!--[--><!--]--></header><aside class="sidebar" data-v-17c48e2f><nav class="nav-links nav" data-v-17c48e2f data-v-35b91e7e><!--[--><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/" data-v-49fe041d>Home <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/archives" data-v-49fe041d>Archives <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/tags" data-v-49fe041d>Tags <!----></a></div></div><div class="item" data-v-35b91e7e><div class="nav-link" data-v-35b91e7e data-v-49fe041d><a class="item" href="/pages/about" data-v-49fe041d>About <!----></a></div></div><!--]--><!----><!----></nav><!--[--><!--]--><ul class="sidebar-links" data-v-17c48e2f><!--[--><li class="sidebar-link"><a class="sidebar-link-item" href="#查询-query-与过滤-filter">查询(query)与过滤(filter)</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#简单查询例子">简单查询例子</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#分页查询">分页查询</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#全文查询">全文查询</a><ul class="sidebar-links"><li class="sidebar-link"><a class="sidebar-link-item" href="#match">match</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#multi-match">multi_match</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#query-string">query_string</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#term">term</a><!----></li><li class="sidebar-link"><a class="sidebar-link-item" href="#range">range</a><!----></li></ul></li><li class="sidebar-link"><a class="sidebar-link-item" href="#组合查询">组合查询</a><!----></li><!--]--></ul><!--[--><!--]--></aside><div class="sidebar-mask"></div><main class="page" data-v-8fcebc32><div class="container" data-v-8fcebc32><!--[--><!--]--><div style="position:relative;" class="content" data-v-8fcebc32><div><h1 id="elasticsearch-dsl查询入门" tabindex="-1">Elasticsearch DSL查询入门 <a class="header-anchor" href="#elasticsearch-dsl查询入门" aria-hidden="true">#</a></h1><h2 id="查询-query-与过滤-filter" tabindex="-1">查询(query)与过滤(filter) <a class="header-anchor" href="#查询-query-与过滤-filter" aria-hidden="true">#</a></h2><p>Elasticsearch中的数据检索分为两种情况：查询和过滤。</p><p>查询(Query)会对检索结果进行评分，注重的点是匹配程度，例如检索“运维咖啡吧”与文档的标题有多匹配，计算的是查询与文档的相关程度，计算完成之后会算出一个评分，记录在_score字段中，并最终按照_score字段来对所有检索到的文档进行排序。</p><p>过滤(Filter)不会对检索结果进行评分，注重的点是是否匹配，例如检索“运维咖啡吧”是否匹配文档的标题，结果只有匹配或者不匹配，因为只是对结果进行简单的匹配，所以计算起来也非常快，并且过滤的结果会被缓存到内存中，性能要比Query查询高很多。</p><h3 id="简单查询例子" tabindex="-1">简单查询例子 <a class="header-anchor" href="#简单查询例子" aria-hidden="true">#</a></h3><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;:{
+    &quot;match_all&quot;: {}
+  }
+}
+</code></pre></div><p>/_search 查找整个ES中所有索引的内容。</p><p>query 为查询关键字，类似的还有aggs为聚合关键字。</p><p>match_all 匹配所有的文档，也可以写match_none不匹配任何文档。</p><p>返回结果如下</p><div class="language-"><pre><code>{
+  &quot;took&quot;: 6729,
+  &quot;timed_out&quot;: false,
+  &quot;num_reduce_phases&quot;: 6,
+  &quot;_shards&quot;: {
+    &quot;total&quot;: 2611,
+    &quot;successful&quot;: 2611,
+    &quot;skipped&quot;: 0,
+    &quot;failed&quot;: 0
+  },
+  &quot;hits&quot;: {
+    &quot;total&quot;: 7662397664,
+    &quot;max_score&quot;: 1,
+    &quot;hits&quot;: [
+      {
+        &quot;_index&quot;: &quot;.kibana&quot;,
+        &quot;_type&quot;: &quot;doc&quot;,
+        &quot;_id&quot;: &quot;url:ec540365d822e8955cf2fa085db189c2&quot;,
+        &quot;_score&quot;: 1,
+        &quot;_source&quot;: {
+          &quot;type&quot;: &quot;url&quot;,
+          &quot;updated_at&quot;: &quot;2018-05-09T07:19:46.075Z&quot;,
+          &quot;url&quot;: {
+            &quot;url&quot;: &quot;/app/kibana&quot;,
+            &quot;accessCount&quot;: 0,
+            &quot;createDate&quot;: &quot;2018-05-09T07:19:46.075Z&quot;,
+            &quot;accessDate&quot;: &quot;2018-05-09T07:19:46.075Z&quot;
+          }
+        }
+      },
+      ...省略其他的结果...
+    ]
+  }
+}
+</code></pre></div><p>took： 表示我们执行整个搜索请求消耗了多少毫秒</p><p>timed_out： 表示本次查询是否超时</p><p>这里需要注意当timed_out为True时也会返回结果，这个结果是在请求超时时ES已经获取到的数据，所以返回的这个数据可能不完整。</p><p>且当你收到timed_out为True之后，虽然这个连接已经关闭，但在后台这个查询并没有结束，而是会继续执行</p><p>_shards： 显示查询中参与的分片信息，成功多少分片失败多少分片等</p><p>hits： 匹配到的文档的信息，其中total表示匹配到的文档总数，max_score为文档中所有_score的最大值</p><p>hits中的hits数组为查询到的文档结果，默认包含查询结果的前十个文档，每个文档都包含文档的_index、_type、_id、_score和_source数据</p><p>结果文档默认情况下是按照相关度（_score）进行降序排列，也就是说最先返回的是相关度最高的文档，文档相关度意思是文档内容与查询条件的匹配程度，上边的查询与过滤中有介绍</p><h3 id="分页查询" tabindex="-1">分页查询 <a class="header-anchor" href="#分页查询" aria-hidden="true">#</a></h3><p>上边有说到查询结果hits默认只展示10个文档，那我们如何查询10个以后的文档呢？ES中给了size和from两个参数</p><p>size： 设置一次返回的结果数量，也就是hits中的文档数量，默认为10</p><p>from： 设置从第几个结果开始往后查询，默认值为0</p><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;size&quot;: 5,
+  &quot;from&quot;: 10,
+  &quot;query&quot;:{
+    &quot;match_all&quot;: {}
+  }
+}
+</code></pre></div><h2 id="全文查询" tabindex="-1">全文查询 <a class="header-anchor" href="#全文查询" aria-hidden="true">#</a></h2><p>上边有用到一个match_all的全文查询关键字，match_all为查询所有记录，常用的查询关键字在ES中还有以下几个</p><h3 id="match" tabindex="-1">match <a class="header-anchor" href="#match" aria-hidden="true">#</a></h3><p>最简单的查询，下边的例子就表示查找host为ops-coffee.cn的所有记录</p><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;:{
+    &quot;match&quot;: {
+      &quot;host&quot;:&quot;ops-coffee.cn&quot;
+    }
+  }
+}
+</code></pre></div><h3 id="multi-match" tabindex="-1">multi_match <a class="header-anchor" href="#multi-match" aria-hidden="true">#</a></h3><p>在多个字段上执行相同的match查询，下边的例子就表示查询host或http_referer字段中包含ops-coffee.cn的记录</p><div class="language-"><pre><code>POST /my_index_nname/_search
+{
+  &quot;query&quot;:{
+    &quot;multi_match&quot;: {
+      &quot;query&quot;:&quot;ops-coffee.cn&quot;,
+      &quot;fields&quot;:[&quot;host&quot;,&quot;http_referer&quot;]
+    }
+  }
+}
+</code></pre></div><h3 id="query-string" tabindex="-1">query_string <a class="header-anchor" href="#query-string" aria-hidden="true">#</a></h3><p>可以在查询里边使用AND或者OR来完成复杂的查询，例如：</p><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;:{
+    &quot;query_string&quot;: {
+      &quot;query&quot;:&quot;(a.ops-coffee.cn) OR (b.ops-coffee.cn)&quot;,
+      &quot;fields&quot;:[&quot;host&quot;]
+    }
+  }
+}
+</code></pre></div><p>以上表示查找host为a.ops-coffee.cn或者b.ops-coffee.cn的所有记录</p><p>也可以用下边这种方式组合更多的条件完成更复杂的查询请求</p><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;:{
+    &quot;query_string&quot;: {
+      &quot;query&quot;:&quot;host:a.ops-coffee.cn OR (host:b.ops-coffee.cn AND status:403)&quot;
+    }
+  }
+}
+</code></pre></div><h3 id="term" tabindex="-1">term <a class="header-anchor" href="#term" aria-hidden="true">#</a></h3><p>term可以用来精确匹配，精确匹配的值可以是数字、时间、布尔值或者是设置了not_analyzed不分词的字符串</p><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;:{
+    &quot;term&quot;: {
+      &quot;status&quot;: {
+        &quot;value&quot;: 404
+      }
+    }
+  }
+}
+</code></pre></div><p>term对输入的文本不进行分析，直接精确匹配输出结果，如果要同时匹配多个值可以使用terms</p><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;: {
+    &quot;terms&quot;: {
+      &quot;status&quot;:[403,404]
+    }
+  }
+}
+</code></pre></div><h3 id="range" tabindex="-1">range <a class="header-anchor" href="#range" aria-hidden="true">#</a></h3><p>range用来查询落在指定区间内的数字或者时间</p><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;: {
+    &quot;range&quot;:{
+      &quot;status&quot;:{
+        &quot;gte&quot;: 400,
+        &quot;lte&quot;: 599
+      }
+    }
+  }
+}
+</code></pre></div><p>以上表示搜索所有状态为400到599之间的数据，这里的操作符主要有四个gt大于，gte大于等于，lt小于，lte小于等于</p><p>当使用日期作为范围查询时，我们需要注意下日期的格式，官方支持的日期格式主要有两种</p><ol><li>时间戳，注意是毫秒粒度</li></ol><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;: {
+    &quot;range&quot;: {
+      &quot;@timestamp&quot;: {
+        &quot;gte&quot;: 1557676800000,
+        &quot;lte&quot;: 1557680400000,
+        &quot;format&quot;:&quot;epoch_millis&quot;
+      }
+    }
+  }
+}
+</code></pre></div><ol start="2"><li>日期字符串</li></ol><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;: {
+    &quot;range&quot;:{
+      &quot;@timestamp&quot;:{
+        &quot;gte&quot;: &quot;2019-05-13 18:30:00&quot;,
+        &quot;lte&quot;: &quot;2019-05-14&quot;,
+        &quot;format&quot;: &quot;yyyy-MM-dd HH:mm:ss||yyyy-MM-dd&quot;,
+        &quot;time_zone&quot;: &quot;+08:00&quot;
+      }
+    }
+  }
+}
+</code></pre></div><p>通常更推荐用这种日期字符串的方式，看起来比较清晰，日期格式可以按照自己的习惯输入，只需要format字段指定匹配的格式，如果格式有多个就用||分开，像例子中那样，不过我更推荐用同样的日期格式</p><p>如果日期中缺少年月日这些内容，那么缺少的部分会用unix的开始时间（即1970年1月1日）填充，当你将&quot;format&quot;:&quot;dd&quot;指定为格式时，那么&quot;gte&quot;:10将被转换成1970-01-10T00:00:00.000Z</p><p>elasticsearch中默认使用的是UTC时间，所以我们在使用时要通过time_zone来设置好时区，以免出错</p><h2 id="组合查询" tabindex="-1">组合查询 <a class="header-anchor" href="#组合查询" aria-hidden="true">#</a></h2><p>通常我们可能需要将很多个条件组合在一起查出最后的结果，这个时候就需要使用ES提供的bool来实现了</p><p>例如我们要查询host为ops-coffee.cn且http_x_forworded_for为111.18.78.128且status不为200的所有数据就可以使用下边的语句</p><div class="language-"><pre><code>POST /my_index_name/_search
+{
+ &quot;query&quot;:{
+    &quot;bool&quot;: {
+      &quot;filter&quot;: [
+        {&quot;match&quot;: {&quot;host&quot;: &quot;ops-coffee.cn&quot;}},
+        {&quot;match&quot;: {&quot;http_x_forwarded_for&quot;: &quot;111.18.78.128&quot;}}
+      ],
+      &quot;must_not&quot;: {&quot;match&quot;: {&quot;status&quot;: 200}}
+    }
+  }
+}
+</code></pre></div><p>主要有四个关键字来组合查询之间的关系，分别为：</p><p>must： 类似于SQL中的AND，必须包含</p><p>must_not： 类似于SQL中的NOT，必须不包含</p><p>should： 满足这些条件中的任何条件都会增加评分_score，不满足也不影响，should只会影响查询结果的_score值，并不会影响结果的内容</p><p>filter： 与must相似，但不会对结果进行相关性评分_score，大多数情况下我们对于日志的需求都无相关性的要求，所以建议查询的过程中多用filter</p></div></div><footer class="page-footer" data-v-8fcebc32 data-v-b65b4b36><div class="edit" data-v-b65b4b36><div class="edit-link" data-v-b65b4b36 data-v-55695e90><!----></div></div><div class="updated" data-v-b65b4b36><!----></div></footer><!----><!--[--><!--]--></div></main></div><!----><!--]--><div class="site-footer"> Copyright © 2021-present <a class="vitepress">hassan</a><br> Powered by <a class="vitepress" target="_blank" href="//vitepress.vuejs.org/">VitePress</a></div><!--]--></div>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"index.md\":\"5a574db5\",\"page_2.md\":\"dfe98553\",\"page_3.md\":\"0c883f91\",\"page_4.md\":\"0914338c\",\"page_5.md\":\"5afac680\",\"page_6.md\":\"a804452b\",\"pages_about.md\":\"d714ae3b\",\"pages_archives.md\":\"61ec8c07\",\"pages_tags.md\":\"7066cd69\",\"posts_blog_github-action.md\":\"039307bb\",\"posts_blog_vitepress-github.md\":\"e694107b\",\"posts_contract_abi.md\":\"b5dc8d7a\",\"posts_contract_abstract_interface.md\":\"cfd623e0\",\"posts_contract_call.md\":\"d7e94049\",\"posts_contract_call_contract.md\":\"7fd8b310\",\"posts_contract_constructor_modifer.md\":\"bd55e01e\",\"posts_contract_create.md\":\"2d0a9180\",\"posts_contract_data_reference.md\":\"1742ca59\",\"posts_contract_data_storage.md\":\"843e230c\",\"posts_contract_delegatecall.md\":\"47dc5f9b\",\"posts_contract_event.md\":\"8efbfb03\",\"posts_contract_exception.md\":\"e5e8e94d\",\"posts_contract_fun_overloading.md\":\"d73632aa\",\"posts_contract_fun_return_val.md\":\"aa187e4a\",\"posts_contract_fun_type.md\":\"23437d56\",\"posts_contract_import.md\":\"ee1e3979\",\"posts_contract_inheritance.md\":\"c997d25f\",\"posts_contract_library.md\":\"dbb5bfaf\",\"posts_contract_mapping.md\":\"0c8e96b0\",\"posts_contract_receive_eth.md\":\"bf89ec21\",\"posts_contract_selector.md\":\"7746dc7f\",\"posts_contract_send_eth.md\":\"8c4fb2db\",\"posts_contract_value_type.md\":\"e623c311\",\"posts_docker_accelerator.md\":\"d307f133\",\"posts_es_es_base_concept.md\":\"d39c3a75\",\"posts_es_es_dsl_one.md\":\"343133b1\",\"posts_es_es_dsl_query.md\":\"734f81a6\",\"posts_es_es_dsl_three.md\":\"a9ed7a3d\",\"posts_es_es_dsl_two.md\":\"ef8ec16e\",\"posts_es_es_index.md\":\"e9adadac\",\"posts_es_es_query_agg.md\":\"fac6b15d\",\"posts_es_es_type.md\":\"518d2cd0\",\"posts_front_cors.md\":\"1418b7ca\",\"posts_git_git-learn.md\":\"8d644872\",\"posts_linux_linux_fork.md\":\"ab1ca9ca\",\"posts_linux_linux_pipe.md\":\"61d41354\",\"posts_linux_linux_recv.md\":\"c5c849d3\",\"posts_mysql_groupby_orderby.md\":\"f03a44e1\",\"posts_mysql_mysql_lock_one.md\":\"682caf0f\",\"posts_mysql_mysql_mvcc.md\":\"298ee3c0\",\"posts_mysql_mysql_partition.md\":\"b862ad42\",\"posts_mysql_mysql_transaction.md\":\"d2e46888\",\"posts_network_tcp-model.md\":\"189535cd\",\"posts_network_tcp-three-shark.md\":\"b2437ba3\",\"posts_network_tcp-time_wait.md\":\"73e8a7f7\",\"posts_network_tpcip-one.md\":\"dafde8ae\",\"posts_personal_information.md\":\"61c69a7d\",\"posts_personal_study.md\":\"a128e151\",\"posts_personal_think-habit.md\":\"5a4bddd6\",\"posts_personal_think-object.md\":\"681883c2\",\"posts_personal_work-five.md\":\"e6aa8f06\",\"posts_tools_parallel-centos.md\":\"03cc9b81\"}")</script>
+    <script type="module" async src="/assets/app.772c5167.js"></script>
+    
+  </body>
+</html>
