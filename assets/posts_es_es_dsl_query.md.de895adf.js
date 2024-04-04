@@ -1,4 +1,4 @@
-import{_ as t,o as e,c as o,f as u}from"./app.772c5167.js";const _='{"title":"Elasticsearch\u5E38\u7528\u67E5\u8BE2","description":"elasticsearch\u5E38\u7528\u67E5\u8BE2\u8BED\u6CD5","frontmatter":{"date":"2024-04-04T00:00:00.000Z","title":"Elasticsearch\u5E38\u7528\u67E5\u8BE2","tags":["es"],"description":"elasticsearch\u5E38\u7528\u67E5\u8BE2\u8BED\u6CD5"},"headers":[{"level":2,"title":"\u67E5\u8BE2(query)\u4E0E\u8FC7\u6EE4(filter)","slug":"\u67E5\u8BE2-query-\u4E0E\u8FC7\u6EE4-filter"},{"level":3,"title":"\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50","slug":"\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50"},{"level":3,"title":"\u5206\u9875\u67E5\u8BE2","slug":"\u5206\u9875\u67E5\u8BE2"},{"level":2,"title":"\u5168\u6587\u67E5\u8BE2","slug":"\u5168\u6587\u67E5\u8BE2"},{"level":3,"title":"match","slug":"match"},{"level":3,"title":"multi_match","slug":"multi-match"},{"level":3,"title":"query_string","slug":"query-string"},{"level":3,"title":"term","slug":"term"},{"level":3,"title":"range","slug":"range"},{"level":2,"title":"\u7EC4\u5408\u67E5\u8BE2","slug":"\u7EC4\u5408\u67E5\u8BE2"}],"relativePath":"posts/es/es_dsl_query.md"}',n={},a=u(`<h1 id="elasticsearch-dsl\u67E5\u8BE2\u5165\u95E8" tabindex="-1">Elasticsearch DSL\u67E5\u8BE2\u5165\u95E8 <a class="header-anchor" href="#elasticsearch-dsl\u67E5\u8BE2\u5165\u95E8" aria-hidden="true">#</a></h1><h2 id="\u67E5\u8BE2-query-\u4E0E\u8FC7\u6EE4-filter" tabindex="-1">\u67E5\u8BE2(query)\u4E0E\u8FC7\u6EE4(filter) <a class="header-anchor" href="#\u67E5\u8BE2-query-\u4E0E\u8FC7\u6EE4-filter" aria-hidden="true">#</a></h2><p>Elasticsearch\u4E2D\u7684\u6570\u636E\u68C0\u7D22\u5206\u4E3A\u4E24\u79CD\u60C5\u51B5\uFF1A\u67E5\u8BE2\u548C\u8FC7\u6EE4\u3002</p><p>\u67E5\u8BE2(Query)\u4F1A\u5BF9\u68C0\u7D22\u7ED3\u679C\u8FDB\u884C\u8BC4\u5206\uFF0C\u6CE8\u91CD\u7684\u70B9\u662F\u5339\u914D\u7A0B\u5EA6\uFF0C\u4F8B\u5982\u68C0\u7D22\u201C\u8FD0\u7EF4\u5496\u5561\u5427\u201D\u4E0E\u6587\u6863\u7684\u6807\u9898\u6709\u591A\u5339\u914D\uFF0C\u8BA1\u7B97\u7684\u662F\u67E5\u8BE2\u4E0E\u6587\u6863\u7684\u76F8\u5173\u7A0B\u5EA6\uFF0C\u8BA1\u7B97\u5B8C\u6210\u4E4B\u540E\u4F1A\u7B97\u51FA\u4E00\u4E2A\u8BC4\u5206\uFF0C\u8BB0\u5F55\u5728_score\u5B57\u6BB5\u4E2D\uFF0C\u5E76\u6700\u7EC8\u6309\u7167_score\u5B57\u6BB5\u6765\u5BF9\u6240\u6709\u68C0\u7D22\u5230\u7684\u6587\u6863\u8FDB\u884C\u6392\u5E8F\u3002</p><p>\u8FC7\u6EE4(Filter)\u4E0D\u4F1A\u5BF9\u68C0\u7D22\u7ED3\u679C\u8FDB\u884C\u8BC4\u5206\uFF0C\u6CE8\u91CD\u7684\u70B9\u662F\u662F\u5426\u5339\u914D\uFF0C\u4F8B\u5982\u68C0\u7D22\u201C\u8FD0\u7EF4\u5496\u5561\u5427\u201D\u662F\u5426\u5339\u914D\u6587\u6863\u7684\u6807\u9898\uFF0C\u7ED3\u679C\u53EA\u6709\u5339\u914D\u6216\u8005\u4E0D\u5339\u914D\uFF0C\u56E0\u4E3A\u53EA\u662F\u5BF9\u7ED3\u679C\u8FDB\u884C\u7B80\u5355\u7684\u5339\u914D\uFF0C\u6240\u4EE5\u8BA1\u7B97\u8D77\u6765\u4E5F\u975E\u5E38\u5FEB\uFF0C\u5E76\u4E14\u8FC7\u6EE4\u7684\u7ED3\u679C\u4F1A\u88AB\u7F13\u5B58\u5230\u5185\u5B58\u4E2D\uFF0C\u6027\u80FD\u8981\u6BD4Query\u67E5\u8BE2\u9AD8\u5F88\u591A\u3002</p><h3 id="\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50" tabindex="-1">\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50 <a class="header-anchor" href="#\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50" aria-hidden="true">#</a></h3><div class="language-"><pre><code>POST /my_index_name/_search
+import{_ as t,o as e,c as o,f as u}from"./app.772c5167.js";const _='{"title":"Elasticsearch\u5E38\u7528\u67E5\u8BE2","description":"elasticsearch\u5E38\u7528\u67E5\u8BE2\u8BED\u6CD5","frontmatter":{"date":"2024-04-04T00:00:00.000Z","title":"Elasticsearch\u5E38\u7528\u67E5\u8BE2","tags":["es"],"description":"elasticsearch\u5E38\u7528\u67E5\u8BE2\u8BED\u6CD5"},"headers":[{"level":2,"title":"\u67E5\u8BE2(query)\u4E0E\u8FC7\u6EE4(filter)","slug":"\u67E5\u8BE2-query-\u4E0E\u8FC7\u6EE4-filter"},{"level":3,"title":"\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50","slug":"\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50"},{"level":3,"title":"\u5206\u9875\u67E5\u8BE2","slug":"\u5206\u9875\u67E5\u8BE2"},{"level":2,"title":"\u5168\u6587\u67E5\u8BE2","slug":"\u5168\u6587\u67E5\u8BE2"},{"level":3,"title":"match","slug":"match"},{"level":3,"title":"match_phrase","slug":"match-phrase"},{"level":3,"title":"multi_match","slug":"multi-match"},{"level":3,"title":"query_string","slug":"query-string"},{"level":3,"title":"term","slug":"term"},{"level":3,"title":"range","slug":"range"},{"level":2,"title":"\u7EC4\u5408\u67E5\u8BE2","slug":"\u7EC4\u5408\u67E5\u8BE2"},{"level":2,"title":"\u805A\u5408\u67E5\u8BE2","slug":"\u805A\u5408\u67E5\u8BE2"},{"level":3,"title":"group by","slug":"group-by"},{"level":2,"title":"\u53C2\u8003","slug":"\u53C2\u8003"}],"relativePath":"posts/es/es_dsl_query.md"}',n={},a=u(`<h1 id="elasticsearch-dsl\u67E5\u8BE2\u5165\u95E8" tabindex="-1">Elasticsearch DSL\u67E5\u8BE2\u5165\u95E8 <a class="header-anchor" href="#elasticsearch-dsl\u67E5\u8BE2\u5165\u95E8" aria-hidden="true">#</a></h1><h2 id="\u67E5\u8BE2-query-\u4E0E\u8FC7\u6EE4-filter" tabindex="-1">\u67E5\u8BE2(query)\u4E0E\u8FC7\u6EE4(filter) <a class="header-anchor" href="#\u67E5\u8BE2-query-\u4E0E\u8FC7\u6EE4-filter" aria-hidden="true">#</a></h2><p>Elasticsearch\u4E2D\u7684\u6570\u636E\u68C0\u7D22\u5206\u4E3A\u4E24\u79CD\u60C5\u51B5\uFF1A\u67E5\u8BE2\u548C\u8FC7\u6EE4\u3002</p><p>\u67E5\u8BE2(Query)\u4F1A\u5BF9\u68C0\u7D22\u7ED3\u679C\u8FDB\u884C\u8BC4\u5206\uFF0C\u6CE8\u91CD\u7684\u70B9\u662F\u5339\u914D\u7A0B\u5EA6\uFF0C\u4F8B\u5982\u68C0\u7D22\u201C\u8FD0\u7EF4\u5496\u5561\u5427\u201D\u4E0E\u6587\u6863\u7684\u6807\u9898\u6709\u591A\u5339\u914D\uFF0C\u8BA1\u7B97\u7684\u662F\u67E5\u8BE2\u4E0E\u6587\u6863\u7684\u76F8\u5173\u7A0B\u5EA6\uFF0C\u8BA1\u7B97\u5B8C\u6210\u4E4B\u540E\u4F1A\u7B97\u51FA\u4E00\u4E2A\u8BC4\u5206\uFF0C\u8BB0\u5F55\u5728_score\u5B57\u6BB5\u4E2D\uFF0C\u5E76\u6700\u7EC8\u6309\u7167_score\u5B57\u6BB5\u6765\u5BF9\u6240\u6709\u68C0\u7D22\u5230\u7684\u6587\u6863\u8FDB\u884C\u6392\u5E8F\u3002</p><p>\u8FC7\u6EE4(Filter)\u4E0D\u4F1A\u5BF9\u68C0\u7D22\u7ED3\u679C\u8FDB\u884C\u8BC4\u5206\uFF0C\u6CE8\u91CD\u7684\u70B9\u662F\u662F\u5426\u5339\u914D\uFF0C\u4F8B\u5982\u68C0\u7D22\u201C\u8FD0\u7EF4\u5496\u5561\u5427\u201D\u662F\u5426\u5339\u914D\u6587\u6863\u7684\u6807\u9898\uFF0C\u7ED3\u679C\u53EA\u6709\u5339\u914D\u6216\u8005\u4E0D\u5339\u914D\uFF0C\u56E0\u4E3A\u53EA\u662F\u5BF9\u7ED3\u679C\u8FDB\u884C\u7B80\u5355\u7684\u5339\u914D\uFF0C\u6240\u4EE5\u8BA1\u7B97\u8D77\u6765\u4E5F\u975E\u5E38\u5FEB\uFF0C\u5E76\u4E14\u8FC7\u6EE4\u7684\u7ED3\u679C\u4F1A\u88AB\u7F13\u5B58\u5230\u5185\u5B58\u4E2D\uFF0C\u6027\u80FD\u8981\u6BD4Query\u67E5\u8BE2\u9AD8\u5F88\u591A\u3002</p><h3 id="\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50" tabindex="-1">\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50 <a class="header-anchor" href="#\u7B80\u5355\u67E5\u8BE2\u4F8B\u5B50" aria-hidden="true">#</a></h3><div class="language-"><pre><code>POST /my_index_name/_search
 {
   &quot;query&quot;:{
     &quot;match_all&quot;: {}
@@ -46,12 +46,20 @@ import{_ as t,o as e,c as o,f as u}from"./app.772c5167.js";const _='{"title":"El
     &quot;match_all&quot;: {}
   }
 }
-</code></pre></div><h2 id="\u5168\u6587\u67E5\u8BE2" tabindex="-1">\u5168\u6587\u67E5\u8BE2 <a class="header-anchor" href="#\u5168\u6587\u67E5\u8BE2" aria-hidden="true">#</a></h2><p>\u4E0A\u8FB9\u6709\u7528\u5230\u4E00\u4E2Amatch_all\u7684\u5168\u6587\u67E5\u8BE2\u5173\u952E\u5B57\uFF0Cmatch_all\u4E3A\u67E5\u8BE2\u6240\u6709\u8BB0\u5F55\uFF0C\u5E38\u7528\u7684\u67E5\u8BE2\u5173\u952E\u5B57\u5728ES\u4E2D\u8FD8\u6709\u4EE5\u4E0B\u51E0\u4E2A</p><h3 id="match" tabindex="-1">match <a class="header-anchor" href="#match" aria-hidden="true">#</a></h3><p>\u6700\u7B80\u5355\u7684\u67E5\u8BE2\uFF0C\u4E0B\u8FB9\u7684\u4F8B\u5B50\u5C31\u8868\u793A\u67E5\u627Ehost\u4E3Aops-coffee.cn\u7684\u6240\u6709\u8BB0\u5F55</p><div class="language-"><pre><code>POST /my_index_name/_search
+</code></pre></div><h2 id="\u5168\u6587\u67E5\u8BE2" tabindex="-1">\u5168\u6587\u67E5\u8BE2 <a class="header-anchor" href="#\u5168\u6587\u67E5\u8BE2" aria-hidden="true">#</a></h2><p>\u4E0A\u8FB9\u6709\u7528\u5230\u4E00\u4E2Amatch_all\u7684\u5168\u6587\u67E5\u8BE2\u5173\u952E\u5B57\uFF0Cmatch_all\u4E3A\u67E5\u8BE2\u6240\u6709\u8BB0\u5F55\uFF0C\u5E38\u7528\u7684\u67E5\u8BE2\u5173\u952E\u5B57\u5728ES\u4E2D\u8FD8\u6709\u4EE5\u4E0B\u51E0\u4E2A</p><h3 id="match" tabindex="-1">match <a class="header-anchor" href="#match" aria-hidden="true">#</a></h3><p>\u6A21\u7CCA\u5339\u914D,\u6700\u7B80\u5355\u7684\u67E5\u8BE2\uFF0C\u4E0B\u8FB9\u7684\u4F8B\u5B50\u5C31\u8868\u793A\u67E5\u51FAcar\u5305\u542B\u5965\u8FEAA8L \u548C \u5965\u8FEA \u548C A8L \u90FD\u67E5\u8BE2\u51FA\u6765,\u6309\u7167\u8BCD\u8FDB\u884C\u67E5\u8BE2</p><div class="language-"><pre><code>POST /my_index_name/_search
 {
-  &quot;query&quot;:{
+  &quot;query&quot;: {
     &quot;match&quot;: {
-      &quot;host&quot;:&quot;ops-coffee.cn&quot;
-    }
+        &quot;car&quot;: &quot;\u5965\u8FEAA8L&quot;
+      }
+  }
+}
+</code></pre></div><h3 id="match-phrase" tabindex="-1">match_phrase <a class="header-anchor" href="#match-phrase" aria-hidden="true">#</a></h3><p>\u77ED\u8BED\u5339\u914D:\u5982 \u641C\u7D22&quot;\u5965\u8FEAA8L&quot; \u4E0D\u4F1A\u67E5\u51FA\u5305\u542B &quot;\u5965\u8FEA&quot; OR &quot;A8L&quot; \u53EA\u4F1A\u67E5\u51FA\u5305\u542B &quot;\u5965\u8FEAA8L&quot;\u7684\u8BB0\u5F55</p><div class="language-"><pre><code>POST /my_index_name/_search
+{
+  &quot;query&quot;: {
+    &quot;match_phrase&quot;: {
+        &quot;car&quot;: &quot;\u5965\u8FEAA8L&quot;
+      }
   }
 }
 </code></pre></div><h3 id="multi-match" tabindex="-1">multi_match <a class="header-anchor" href="#multi-match" aria-hidden="true">#</a></h3><p>\u5728\u591A\u4E2A\u5B57\u6BB5\u4E0A\u6267\u884C\u76F8\u540C\u7684match\u67E5\u8BE2\uFF0C\u4E0B\u8FB9\u7684\u4F8B\u5B50\u5C31\u8868\u793A\u67E5\u8BE2host\u6216http_referer\u5B57\u6BB5\u4E2D\u5305\u542Bops-coffee.cn\u7684\u8BB0\u5F55</p><div class="language-"><pre><code>POST /my_index_nname/_search
@@ -80,7 +88,7 @@ import{_ as t,o as e,c as o,f as u}from"./app.772c5167.js";const _='{"title":"El
     }
   }
 }
-</code></pre></div><h3 id="term" tabindex="-1">term <a class="header-anchor" href="#term" aria-hidden="true">#</a></h3><p>term\u53EF\u4EE5\u7528\u6765\u7CBE\u786E\u5339\u914D\uFF0C\u7CBE\u786E\u5339\u914D\u7684\u503C\u53EF\u4EE5\u662F\u6570\u5B57\u3001\u65F6\u95F4\u3001\u5E03\u5C14\u503C\u6216\u8005\u662F\u8BBE\u7F6E\u4E86not_analyzed\u4E0D\u5206\u8BCD\u7684\u5B57\u7B26\u4E32</p><div class="language-"><pre><code>POST /my_index_name/_search
+</code></pre></div><h3 id="term" tabindex="-1">term <a class="header-anchor" href="#term" aria-hidden="true">#</a></h3><p>\u5C06\u6309\u7167\u5B58\u50A8\u5728\u5012\u6392\u7D22\u5F15\u4E2D\u7684\u786E\u5207\u5B57\u8BCD\u8FDB\u884C\u64CD\u4F5C\uFF0C\u8FD9\u4E9B\u67E5\u8BE2\u901A\u5E38\u7528\u4E8E\u6570\u5B57\uFF0C\u65E5\u671F\u548C\u679A\u4E3E\u6216\u8005\u662F\u8BBE\u7F6E\u4E86not_analyzed\u4E0D\u5206\u8BCD\u7684\u5B57\u7B26\u4E32\u7B49\u7ED3\u6784\u5316\u6570\u636E\uFF0C\u800C\u4E0D\u662F\u5168\u6587\u672C\u5B57\u6BB5\u3002 \u6216\u8005\uFF0C\u5B83\u4EEC\u5141\u8BB8\u60A8\u5236\u4F5C\u4F4E\u7EA7\u67E5\u8BE2\uFF0C\u5E76\u5728\u5206\u6790\u8FC7\u7A0B\u4E4B\u524D\u8FDB\u884C</p><div class="language-"><pre><code>POST /my_index_name/_search
 {
   &quot;query&quot;:{
     &quot;term&quot;: {
@@ -146,4 +154,46 @@ import{_ as t,o as e,c as o,f as u}from"./app.772c5167.js";const _='{"title":"El
     }
   }
 }
-</code></pre></div><p>\u4E3B\u8981\u6709\u56DB\u4E2A\u5173\u952E\u5B57\u6765\u7EC4\u5408\u67E5\u8BE2\u4E4B\u95F4\u7684\u5173\u7CFB\uFF0C\u5206\u522B\u4E3A\uFF1A</p><p>must\uFF1A \u7C7B\u4F3C\u4E8ESQL\u4E2D\u7684AND\uFF0C\u5FC5\u987B\u5305\u542B</p><p>must_not\uFF1A \u7C7B\u4F3C\u4E8ESQL\u4E2D\u7684NOT\uFF0C\u5FC5\u987B\u4E0D\u5305\u542B</p><p>should\uFF1A \u6EE1\u8DB3\u8FD9\u4E9B\u6761\u4EF6\u4E2D\u7684\u4EFB\u4F55\u6761\u4EF6\u90FD\u4F1A\u589E\u52A0\u8BC4\u5206_score\uFF0C\u4E0D\u6EE1\u8DB3\u4E5F\u4E0D\u5F71\u54CD\uFF0Cshould\u53EA\u4F1A\u5F71\u54CD\u67E5\u8BE2\u7ED3\u679C\u7684_score\u503C\uFF0C\u5E76\u4E0D\u4F1A\u5F71\u54CD\u7ED3\u679C\u7684\u5185\u5BB9</p><p>filter\uFF1A \u4E0Emust\u76F8\u4F3C\uFF0C\u4F46\u4E0D\u4F1A\u5BF9\u7ED3\u679C\u8FDB\u884C\u76F8\u5173\u6027\u8BC4\u5206_score\uFF0C\u5927\u591A\u6570\u60C5\u51B5\u4E0B\u6211\u4EEC\u5BF9\u4E8E\u65E5\u5FD7\u7684\u9700\u6C42\u90FD\u65E0\u76F8\u5173\u6027\u7684\u8981\u6C42\uFF0C\u6240\u4EE5\u5EFA\u8BAE\u67E5\u8BE2\u7684\u8FC7\u7A0B\u4E2D\u591A\u7528filter</p>`,65),q=[a];function r(s,c,i,d,l,p){return e(),o("div",null,q)}var m=t(n,[["render",r]]);export{_ as __pageData,m as default};
+</code></pre></div><p>\u4E3B\u8981\u6709\u56DB\u4E2A\u5173\u952E\u5B57\u6765\u7EC4\u5408\u67E5\u8BE2\u4E4B\u95F4\u7684\u5173\u7CFB\uFF0C\u5206\u522B\u4E3A\uFF1A</p><p>must\uFF1A \u67E5\u8BE2\u5FC5\u987B\u540C\u65F6\u6EE1\u8DB3\u6211\u6240\u6709\u6761\u4EF6\uFF0C\u7C7B\u4F3C\u4E8ESQL\u4E2D\u7684AND\uFF0C\u5FC5\u987B\u5305\u542B</p><p>must_not\uFF1A \u67E5\u8BE2\u4E0D\u6EE1\u8DB3\u6761\u4EF6\uFF0C\u7C7B\u4F3C\u4E8ESQL\u4E2D\u7684NOT\uFF0C\u5FC5\u987B\u4E0D\u5305\u542B</p><p>should\uFF1A \u81F3\u5C11\u6EE1\u8DB3\u4E00\u4E2A\u6761\u4EF6\uFF0C\u6EE1\u8DB3\u8FD9\u4E9B\u6761\u4EF6\u4E2D\u7684\u4EFB\u4F55\u6761\u4EF6\u90FD\u4F1A\u589E\u52A0\u8BC4\u5206_score\uFF0C\u4E0D\u6EE1\u8DB3\u4E5F\u4E0D\u5F71\u54CD\uFF0Cshould\u53EA\u4F1A\u5F71\u54CD\u67E5\u8BE2\u7ED3\u679C\u7684_score\u503C\uFF0C\u5E76\u4E0D\u4F1A\u5F71\u54CD\u7ED3\u679C\u7684\u5185\u5BB9</p><p>filter\uFF1A \u4E0Emust\u76F8\u4F3C\uFF0C\u4F46\u4E0D\u4F1A\u5BF9\u7ED3\u679C\u8FDB\u884C\u76F8\u5173\u6027\u8BC4\u5206_score\uFF0C\u5927\u591A\u6570\u60C5\u51B5\u4E0B\u6211\u4EEC\u5BF9\u4E8E\u65E5\u5FD7\u7684\u9700\u6C42\u90FD\u65E0\u76F8\u5173\u6027\u7684\u8981\u6C42\uFF0C\u6240\u4EE5\u5EFA\u8BAE\u67E5\u8BE2\u7684\u8FC7\u7A0B\u4E2D\u591A\u7528filter</p><h2 id="\u805A\u5408\u67E5\u8BE2" tabindex="-1">\u805A\u5408\u67E5\u8BE2 <a class="header-anchor" href="#\u805A\u5408\u67E5\u8BE2" aria-hidden="true">#</a></h2><h3 id="group-by" tabindex="-1">group by <a class="header-anchor" href="#group-by" aria-hidden="true">#</a></h3><div class="language-"><pre><code>#\u6839\u636E\u5E74\u9F84\u5B57\u6BB5\u5206\u7EC4\u67E5\u8BE2
+POST /my_index_name/_search
+{
+ &quot;aggs&quot;: {
+   &quot;group_by_age&quot;: {
+     &quot;terms&quot;: { 
+       &quot;field&quot;: &quot;age&quot; 
+       
+     }
+   }
+ }
+}
+
+#\u6839\u636E\u6761\u4EF6\u5206\u7EC4
+POST /my_index_name/_search
+{
+ &quot;query&quot;: {
+   &quot;match&quot;: {
+     &quot;car&quot;: &quot;\u5965\u8FEA&quot;
+   }
+ },
+ &quot;aggs&quot;: {
+   &quot;group_by_age&quot;: {
+     &quot;terms&quot;: { &quot;field&quot;: &quot;age&quot; }
+   }
+ }
+}
+
+#\u5206\u7EC4\u5E76\u6C42\u5E73\u5747\u503C
+POST /my_index_name/_search
+{
+ &quot;aggs&quot;: {
+   &quot;group_by_age&quot;: {
+     &quot;terms&quot;: { &quot;field&quot;: &quot;age&quot; },
+     &quot;aggs&quot; : {
+               &quot;avg_age&quot; : {
+                   &quot;avg&quot; : { &quot;field&quot; : &quot;age&quot; }
+               }
+           }
+   }
+ }
+}
+</code></pre></div><h2 id="\u53C2\u8003" tabindex="-1">\u53C2\u8003 <a class="header-anchor" href="#\u53C2\u8003" aria-hidden="true">#</a></h2><p><a href="https://cloud.tencent.com/developer/article/1694119" target="_blank" rel="noopener noreferrer">https://cloud.tencent.com/developer/article/1694119</a></p>`,73),q=[a];function r(s,c,d,i,l,h){return e(),o("div",null,q)}var m=t(n,[["render",r]]);export{_ as __pageData,m as default};
