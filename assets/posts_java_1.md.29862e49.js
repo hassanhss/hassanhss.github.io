@@ -1,1 +1,0 @@
-import{_ as t,o as e,c as a}from"./app.fa80e2f7.js";const f='{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"posts/java/1.md"}',r={};function o(s,c,n,_,p,i){return e(),a("div")}var l=t(r,[["render",o]]);export{f as __pageData,l as default};
